@@ -14,7 +14,7 @@ pub struct QuizQuestion { // not in use
 
 
 #[derive(Debug)]
-pub struct QuizQuestion_v2 {
+pub struct QuizQuestionv2 {
     pub question_and_answers: Vec<HashMap<String, String>>,
     // maybe change later if we wanna add more types of questions. but for now. only true false or multi 4 op. 
     // wonder if there is any point in making this a struct. Feel like there isnt if you gonna have everything in
@@ -27,12 +27,12 @@ pub struct QuizQuestion_v2 {
 #[derive(Debug)]
 pub struct Quiz {
     pub quiz_name: String,
-    pub quiz_questions: QuizQuestion_v2,
+    pub quiz_questions: QuizQuestionv2,
     pub quiz_metadata: Vec<Option<String>> // points, statistics, notes? 
     // what else do we need in here though? why make this a struct? 
 }
 
-impl QuizQuestion_v2{
+impl QuizQuestionv2{
     
     /// returns the questions of a quiz in a struct. 
     /// note by the nature of hash these will not be in order 
@@ -68,5 +68,18 @@ impl QuizQuestion_v2{
         Self {
             question_and_answers: vec![question1, question2, question3]
         }
+    }
+}
+
+
+impl Quiz{
+    /// quiz for early testing
+    pub fn create_dev_quiz() -> Self {
+        let test_quiz = Quiz{
+            quiz_name: String::from("test quiz for testing!"),
+            quiz_questions: QuizQuestionv2::create_test_quiz_questions(),
+            quiz_metadata: vec![None, None]
+        };
+        test_quiz
     }
 }
