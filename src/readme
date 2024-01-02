@@ -1,0 +1,34 @@
+12/4/23
+We started before this data but this is when I made the read me so whatever.
+
+First objective. Get the logic side workining. I think first iteration can look like the following workflow:
+ - Start Quiz Show script
+ - Immediate prompt to type name of quiz you would like to do. 
+    - Should be a list of all the known quizes in the proper folder
+ - Upon typing the name, the quiz should immediatly restart, stdout will simply display the following:
+    - Name of Quiz
+    - Question
+    - 4 Possible answers labeled 1-4
+    - Prompt for user to enter a number from 1-4 for the desired answer. 
+
+ - Upon completion of quiz, the results of the quiz should be displayed in said form:
+    - Name of Quiz
+    - Number of questions correct out of total number of questions incorrect
+    - Modivational blurb depending on how well you did.
+    - Prompt for user to end program or return to starting screen. 
+
+
+I think this working is somewhat exceptable as a flashcard game. But not as a quiz show. But getting this much done is huge. 
+After that, I think we go crazy on ui, keep all that functionality but get it working in like a window or something. make it look nice, make everything controllable with arrow keys, stuff like that. 
+We can go into more details for the requirements on that front later. 
+After this point it should look pretty nice, but it wont be anything more then a cool flashcard quiz setup until the last part is completed.
+*Note to self - flashcard option where either you make your own notes or can just study the contents of a quiz would actually be pretty cool. But thats  future post submition work. Plenty of work to be done before then. 
+
+Then the final objective, and what upon completion would constitue the game as being completed, would be the actual 
+quiz show format, were you get a collection of a couple of quizes, and play against some bots. 
+
+
+
+I think each task is pretty large but each are pretty similar is level of workload. 
+On workdays lets update our progress here and see how we do. 
+
