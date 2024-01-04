@@ -11,7 +11,7 @@ pub fn start_up_screen() {
     println!("Give it a shot, see how it works.");
     println!("The quiz will start when you hit enter.");
 
-    io::stdin();
+    io::stdin(); // TODO: upon running this does not do what we think it does. 
     let results = start_quiz(ready_quiz("test_dev"));
     report_outcome(results);
 }
@@ -47,7 +47,7 @@ fn report_outcome(results: Vec<bool>) {
 /// display current question and answers, provide numbers for user to enter 
 fn display_question(question: HashMap<String,String>) -> bool{
     let mut list_of_answers: Vec<(usize,&String)> = Vec::new();
-    let question_name = question.get("Question Name");
+    let question_name = question.get("Question Name").unwrap(); // TODO: Added unwrap here. is that the only way? confirm
     println!("{question_name}"); // TODO: not sure how to address this problem yet, in right way that is
     // no display implemenation that is.
     println!("\n");
@@ -57,7 +57,7 @@ fn display_question(question: HashMap<String,String>) -> bool{
         list_of_answers.push((list_of_answers.len() + 1, value));
     }
 
-    for answer in list_of_answers{
+    for answer in &list_of_answers{
         println!("[{}] {}",answer.0, answer.1);
     };
 
@@ -91,7 +91,8 @@ fn display_question(question: HashMap<String,String>) -> bool{
         
         // handle looking for key of value input 
         list_of_answers.iter()
-        .find_map(|(key, &val)| if list_of_answers[user_guess + 1].0 == val { Some(key) } else { None });
+        .find_map(|(key, &ref val)| if &list_of_answers[1].0.to_string() == val { Some(key) } else { None });
+    // TODO: Still need to do something with this. consider removing all together since im starting to lose the thread. 
 
         // handle return bool
     }
