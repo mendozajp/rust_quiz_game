@@ -1,10 +1,10 @@
 // this file should house all the logic for actually running the quizes, so higher level then riddler. 
 // to be a library though, wont be necessary for first iteration
 // mod riddler;
-use std::{io, collections::{hash_map, HashMap}};
+use std::{io, collections::HashMap};
+use std::io::BufRead;
 #[path = "riddler.rs"]
 mod riddler;
-use std::io::BufRead;
 
 pub fn start_up_screen() {
     println!("Welcome To Quiz Show!\n");
@@ -12,9 +12,10 @@ pub fn start_up_screen() {
     println!("Give it a shot, see how it works.");
     println!("The quiz will start when you hit enter.");
 
-    let stdin = io::stdin(); // TODO: upon running this does not do what we think it does. 
+    let stdin = io::stdin();
     stdin.lock().lines().next();
-    let results = start_quiz(ready_quiz("test_dev"));
+
+    let results = start_quiz(ready_quiz("dev_test"));
     report_outcome(results);
 }
 
@@ -34,8 +35,14 @@ fn ready_quiz(test_name: &str) -> riddler::Quiz {
 fn start_quiz(quiz: riddler::Quiz) -> Vec<bool>{
     // you should do a bash reset here, look into it later
     // looks like we dont need this but im setting up for initing the env later. 
+
+    // display title - maybe number of questions left. maybe time? not in scope now though.
+    // if we end up doing resets after every question, which for now until we add everything else we probably should,
+    // we need to constantly keep showing the quiz name, the header i guess i should say. 
     cycle_through_questions(quiz.quiz_questions)
 }
+
+
 
 /// only thing this should say now is how many you got right out of how many you got wrong. 
 fn report_outcome(results: Vec<bool>) {
@@ -46,37 +53,61 @@ fn report_outcome(results: Vec<bool>) {
         number_of_correct_answers, total_number_of_questions);
 }
 
+
+
 /// display current question and answers, provide numbers for user to enter 
 fn display_question(question: HashMap<String,String>) -> bool{
-    let mut list_of_answers: Vec<(usize,&String)> = Vec::new();
+    let mut list_of_answers: Vec<(usize,&String)> = Vec::new(); // wonder if we can just use the natural index for the usize 
+    // wanna quickly see if this would be any better as a hash. Wanna say no immediatly since then its nore ordered. when we display its gonna be weird. 
+    // let mut list_of_answers: Vec<&str> = Vec::new();
+
+    // check with getting both question number and question
+    let mut list_of_answers: Vec<(&String,&String)> = Vec::new();
+
+
+
+
+    // display question name
     let question_name = question.get("Question Name").unwrap(); // TODO: Added unwrap here. is that the only way? confirm
-    println!("{question_name}"); // TODO: not sure how to address this problem yet, in right way that is
-    // no display implemenation that is.
+    println!("{question_name}");
     println!("\n");
 
-    for (key, value) in &question{
+// og tuple setup
+    // for (key, value) in &question{
+    //     if key == "Question Name" || key == "Answer" { continue; };
+    //     list_of_answers.push((list_of_answers.len() + 1, value));
+    // }
+
+    // for answer in &list_of_answers{
+    //     println!("[{}] {}",answer.0, answer.1);
+    // }
+
+    // init vector with available answers in random order by nature of hashmap
+    // for 2nd list of answers impl
+    // for (key, value) in &question {
+    //     if key == "Question Name" || key == "Answer" { continue; };
+    //     list_of_answers.push(&value);
+    // }
+
+    for (key, value) in &question {
         if key == "Question Name" || key == "Answer" { continue; };
-        list_of_answers.push((list_of_answers.len() + 1, value));
+        list_of_answers.push((key, value));
     }
 
-    for answer in &list_of_answers{
-        println!("[{}] {}",answer.0, answer.1);
-    };
+    for (index, answer) in list_of_answers.iter().enumerate() {
+        println!("[{}] {}", index, answer.1); // remember the list is a tuple in this case
+    }
 
-// TODO: 
-    // objective here is to get the user input, confirm its good to convert to a number
-    // then find the numbers corresponding answer, then find that answers corresponding key in 
-    // the question object since that key is the same format as the answer, then check if the user
-    // guess is the correct answer and return a bool on what it is.
-
+    let correct_value = &question["Answer"];
+    let mut user_input: u32; // this is gangerous
     loop{
-        let mut user_guess: String = String::new();
+        let mut user_guess = String::new();
         println!("Please enter your guess by typing its corresponding number.");
         io::stdin()
             .read_line(&mut user_guess)
             .expect("");
 
-        let user_guess: u32 = match user_guess.trim().parse() {
+        user_input = match user_guess.trim().parse() { // i dont think this is gonna be moved out. 
             Ok(num) => num,
             Err(_) => {
                 println!("invaild input, please enter your guess by typing its corresponding number");
@@ -85,19 +116,19 @@ fn display_question(question: HashMap<String,String>) -> bool{
         };
 
         // handle not available option
-        if user_guess > list_of_answers.len().try_into().unwrap() || user_guess <= 0 { // TODO: confirm need for try_into and unwrap
+        if user_input > list_of_answers.len().try_into().unwrap() || user_input < 0 { // TODO: confirm need for try_into and unwrap
             println!("input not available, please enter your guess by typing its corresponding number");
             continue;
         }
-        
-        
-        // handle looking for key of value input 
-        list_of_answers.iter()
-        .find_map(|(key, &ref val)| if &list_of_answers[1].0.to_string() == val { Some(key) } else { None });
-    // TODO: Still need to do something with this. consider removing all together since im starting to lose the thread. 
-
-        // handle return bool
+        break;
     }
+
+    let user_input: usize = user_input.try_into().unwrap(); // TODO: doesnt feel clean at all. read for a better way on this last step.
+
+    if list_of_answers[user_input].0 == correct_value {
+        return true;
+    }
+    return false;
 }
 
 fn cycle_through_questions(questions: riddler::QuizQuestionv2) -> Vec<bool>{
