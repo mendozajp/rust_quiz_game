@@ -4,6 +4,7 @@
 use std::{io, collections::{hash_map, HashMap}};
 #[path = "riddler.rs"]
 mod riddler;
+use std::io::BufRead;
 
 pub fn start_up_screen() {
     println!("Welcome To Quiz Show!\n");
@@ -11,7 +12,8 @@ pub fn start_up_screen() {
     println!("Give it a shot, see how it works.");
     println!("The quiz will start when you hit enter.");
 
-    io::stdin(); // TODO: upon running this does not do what we think it does. 
+    let stdin = io::stdin(); // TODO: upon running this does not do what we think it does. 
+    stdin.lock().lines().next();
     let results = start_quiz(ready_quiz("test_dev"));
     report_outcome(results);
 }
