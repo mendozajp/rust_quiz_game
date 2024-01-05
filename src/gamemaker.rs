@@ -31,7 +31,6 @@ fn ready_quiz(test_name: &str) -> riddler::Quiz {
     }
 }
 
-
 fn start_quiz(quiz: riddler::Quiz) -> Vec<bool>{
     // you should do a bash reset here, look into it later
     // looks like we dont need this but im setting up for initing the env later. 
@@ -42,8 +41,6 @@ fn start_quiz(quiz: riddler::Quiz) -> Vec<bool>{
     cycle_through_questions(quiz.quiz_questions)
 }
 
-
-
 /// only thing this should say now is how many you got right out of how many you got wrong. 
 fn report_outcome(results: Vec<bool>) {
     let total_number_of_questions = results.len();
@@ -53,41 +50,14 @@ fn report_outcome(results: Vec<bool>) {
         number_of_correct_answers, total_number_of_questions);
 }
 
-
-
 /// display current question and answers, provide numbers for user to enter 
 fn display_question(question: HashMap<String,String>) -> bool{
-    let mut list_of_answers: Vec<(usize,&String)> = Vec::new(); // wonder if we can just use the natural index for the usize 
-    // wanna quickly see if this would be any better as a hash. Wanna say no immediatly since then its nore ordered. when we display its gonna be weird. 
-    // let mut list_of_answers: Vec<&str> = Vec::new();
-
     // check with getting both question number and question
     let mut list_of_answers: Vec<(&String,&String)> = Vec::new();
-
-
-
 
     // display question name
     let question_name = question.get("Question Name").unwrap(); // TODO: Added unwrap here. is that the only way? confirm
     println!("{question_name}");
-    println!("\n");
-
-// og tuple setup
-    // for (key, value) in &question{
-    //     if key == "Question Name" || key == "Answer" { continue; };
-    //     list_of_answers.push((list_of_answers.len() + 1, value));
-    // }
-
-    // for answer in &list_of_answers{
-    //     println!("[{}] {}",answer.0, answer.1);
-    // }
-
-    // init vector with available answers in random order by nature of hashmap
-    // for 2nd list of answers impl
-    // for (key, value) in &question {
-    //     if key == "Question Name" || key == "Answer" { continue; };
-    //     list_of_answers.push(&value);
-    // }
 
     for (key, value) in &question {
         if key == "Question Name" || key == "Answer" { continue; };
@@ -95,11 +65,11 @@ fn display_question(question: HashMap<String,String>) -> bool{
     }
 
     for (index, answer) in list_of_answers.iter().enumerate() {
-        println!("[{}] {}", index, answer.1); // remember the list is a tuple in this case
+        println!("[{}] {}", index, answer.1);
     }
 
     let correct_value = &question["Answer"];
-    let mut user_input: u32; // this is gangerous
+    let mut user_input: u32; // TODO: Confirm this the best type
     loop{
         let mut user_guess = String::new();
         println!("Please enter your guess by typing its corresponding number.");
@@ -107,7 +77,7 @@ fn display_question(question: HashMap<String,String>) -> bool{
             .read_line(&mut user_guess)
             .expect("");
 
-        user_input = match user_guess.trim().parse() { // i dont think this is gonna be moved out. 
+        user_input = match user_guess.trim().parse() { // TODO: confirm method of populating user_input
             Ok(num) => num,
             Err(_) => {
                 println!("invaild input, please enter your guess by typing its corresponding number");
@@ -116,7 +86,8 @@ fn display_question(question: HashMap<String,String>) -> bool{
         };
 
         // handle not available option
-        if user_input > list_of_answers.len().try_into().unwrap() || user_input < 0 { // TODO: confirm need for try_into and unwrap
+        if user_input + 1 > list_of_answers.len().try_into().unwrap() || user_input < 0 { // TODO: confirm need for try_into and unwrap
+                                                                                          // TODO: clean up conditionals 
             println!("input not available, please enter your guess by typing its corresponding number");
             continue;
         }
@@ -132,7 +103,6 @@ fn display_question(question: HashMap<String,String>) -> bool{
 }
 
 fn cycle_through_questions(questions: riddler::QuizQuestionv2) -> Vec<bool>{
-    // not sure if i want to do this yet
     let mut results: Vec<bool> = Vec::new();
 
     for question in questions.question_and_answers{
