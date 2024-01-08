@@ -1,6 +1,6 @@
 use std::{collections::HashMap, path::Path, fs};
 extern crate yaml_rust;
-use yaml_rust::{YamlLoader, YamlEmitter, yaml::Hash};
+use yaml_rust::{YamlLoader, YamlEmitter, yaml::Hash, Yaml};
 // use core::any::type_name;
 use std::any::type_name;
 
@@ -98,8 +98,9 @@ impl Quiz{
 }
 
 
-pub fn load_quiz_from_yaml(path: &Path) -> Quiz{
+pub fn load_quiz_from_yaml(path: &Path) -> Vec<Quiz>{
     //TODO: Confirm path exists and catch
+    let mut quizes: Vec<Quiz> = Vec::new();
     let file_contents = fs::read_to_string(path)
         .expect("Should have been able to read the file. Is this the correct path?");
 
@@ -112,56 +113,85 @@ pub fn load_quiz_from_yaml(path: &Path) -> Quiz{
 
     for questions in quiz_file[0].as_hash().unwrap() { // will only get one file/quiz
         let quiz_name = questions.0.as_str().unwrap().to_string();
-        let questions_and_answers: Vec<HashMap<String, String>> = Vec::new();
-        let quiz_metadata = vec![None, None];
+        let mut questions_and_answers: Vec<HashMap<String, String>> = Vec::new();
+        let quiz_metadata: Vec<Option<String>> = vec![None, None];
 
         let mut counter = 0;
         for question in questions.1.as_hash().unwrap() {
-            
-            println!("{} - {:?}", counter, question);
-            counter += 1;
+            // here we touch every question in the current setup
+            let question_name = question.0.clone().into_string();
+            let mut available_answers: HashMap<String, String> = HashMap::new();
 
-            
-            // here you are going to be looping over all of the questions.
-            // .1 is a hashmap with all the answers and the answer and .0 is the question name
-            // if you can put .0 in .1s hash map with "question name" then we can just push it 
-            // into questions and answers. 
+            println!();
 
-
-            // TODO: FIND OUT HOW TO GET THAT HASH NOT YAML, LOOK INTO DUMP
-            // THERE IS NO WAY THERE ISNT A WAY. IT WOULD BE DUMB IF THEIR WASNT.
-            // let question_name = question.0.as_str().unwrap().to_string();
-            // let available_answers = question.1.into_hash().unwrap();
-            // for (thing, thing1) in available_answers { // pretty sure this is not how rust works
-            //     thing = thing.into_string();            // spend some time looking at the yaml library
-            // }                                           // think it will be helpful in the future too.
-            // println!("{:?}", available_answers);
-            // available_answers.entry(String::from("Question Name")).or_insert(question_name);
+            let lines = question.1.clone().into_hash().unwrap();
+            let mut counter = 0;
+            for k in lines{
+                counter += 1;
+                println!("[{}] - base expected -  key - {:?} -- value - {:?}", counter, k.0, k.1);
+                let mut key = Some(String::from("")); 
+                let mut answer = Some(String::from("")); 
+                let mut emergency = Some(90);
+                let mut key_flag = false;
+                let mut value_flag = false;
+                let mut failsafe = String::new();
 
 
+                match k.0.clone().into_string() {
+                    Some(value) => {key = Some(value)}
+                    None => {
+                        key_flag = true;
+                        emergency = k.0.as_i64();
+                    }
+                }
+                match k.1.clone().into_string() {
+                    Some(value) => {answer = Some(value)}
+                    None => {
+                        value_flag = true;
+                        emergency = k.1.as_i64();
+                    }
+                }
 
 
-            // println!("{:?}", question);
-    
+                if key_flag || value_flag {
+                    failsafe = emergency.unwrap().to_string();
+                }
+
+                if key_flag{
+                    println!("[{}] - results after conversion -  key - {:?} -- value - {:?}", counter, failsafe, answer);
+                    available_answers.insert(failsafe, answer.unwrap());
+
+                }
+                else if value_flag{
+                    println!("[{}] - results after conversion -  key - {:?} -- value - {:?}", counter, key, failsafe);
+                    available_answers.insert(key.unwrap(), failsafe);
+
+                } else {
+                    println!("[{}] - results after conversion -  key - {:?} -- value - {:?}", counter, key, answer);
+                    available_answers.insert(key.unwrap(), answer.unwrap());
+
+                }
+                println!("{:?}", available_answers);
+
+            }
+            available_answers.insert(String::from("Question Name"), question_name.unwrap());
+            questions_and_answers.push(available_answers);
         }
-
-        // Quiz::create_quiz(quiz_name, questions_and_answers, quiz_metadata);
-        // println!("{:#?}", type_of(questions));
-        // println!("*************************************************************************************");
-
+        println!("final result - {:?}", &questions_and_answers);
+        let questions_and_answers = QuizQuestionv2{question_and_answers: questions_and_answers};
+        quizes.push(Quiz::create_quiz(quiz_name, questions_and_answers, quiz_metadata));
     }
-
-
-
-    println!("ignore return, its just for now...");
-    Quiz::create_dev_quiz()
+    println!("{:#?}",quizes);
+    quizes
 }
+        
 
 pub fn populate_master_quiz() {
     // read all files in quiz folder and populate master quiz.
     // not in scope for 1st Deliverable
 }
 
+// for debugging
 fn type_of<T>(_: T) -> &'static str {
     type_name::<T>()
 }
