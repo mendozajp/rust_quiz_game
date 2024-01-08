@@ -126,9 +126,9 @@ pub fn load_quiz_from_yaml(path: &Path) -> Quiz{
             // THERE IS NO WAY THERE ISNT A WAY. IT WOULD BE DUMB IF THEIR WASNT.
             let question_name = question.0.as_str().unwrap().to_string();
             let available_answers = question.1.into_hash().unwrap();
-            for (thing, thing1) in available_answers {
-                thing = thing.into_string();
-            }
+            for (thing, thing1) in available_answers { // pretty sure this is not how rust works
+                thing = thing.into_string();            // spend some time looking at the yaml library
+            }                                           // think it will be helpful in the future too.
             println!("{:?}", available_answers);
             available_answers.entry(String::from("Question Name")).or_insert(question_name);
 
