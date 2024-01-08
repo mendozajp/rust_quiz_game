@@ -1,5 +1,8 @@
+use std::{collections::HashMap, path::Path, fs};
 extern crate yaml_rust;
-use std::collections::HashMap;
+use yaml_rust::{YamlLoader, YamlEmitter, yaml::Hash};
+// use core::any::type_name;
+use std::any::type_name;
 
 pub struct QuizQuestion { // not in use
     pub parent_quiz: String,
@@ -73,6 +76,16 @@ impl QuizQuestionv2{
 
 
 impl Quiz{
+    fn create_quiz(quiz_name: String,
+         quiz_questions:QuizQuestionv2,
+          quiz_metadata:Vec<Option<String>>)
+           -> Self {
+        Quiz{
+            quiz_name,
+            quiz_questions,
+            quiz_metadata,
+        }
+    }
     /// quiz for early testing
     pub fn create_dev_quiz() -> Self {
         let test_quiz = Quiz{
@@ -82,4 +95,67 @@ impl Quiz{
         };
         test_quiz
     }
+}
+
+
+pub fn load_quiz_from_yaml(path: &Path) -> Quiz{
+    //TODO: Confirm path exists and catch
+    let file_contents = fs::read_to_string(path)
+        .expect("Should have been able to read the file. Is this the correct path?");
+
+    let quiz_file = YamlLoader::load_from_str(&file_contents).unwrap();
+
+    // println!("{:#?}", type_of(&quiz_file));
+    println!("{:#?}", type_of(&quiz_file[0][0]));
+    println!("{:#?}", type_of(&quiz_file[0]));
+
+
+    for questions in quiz_file[0].as_hash().unwrap() { // will only get one file/quiz
+        let quiz_name = questions.0.as_str().unwrap().to_string();
+        let questions_and_answers: Vec<HashMap<String, String>> = Vec::new();
+        let quiz_metadata = vec![None, None];
+
+        for question in questions.1.as_hash().unwrap() {
+            // here you are going to be looping over all of the questions.
+            // .1 is a hashmap with all the answers and the answer and .0 is the question name
+            // if you can put .0 in .1s hash map with "question name" then we can just push it 
+            // into questions and answers. 
+
+
+            // TODO: FIND OUT HOW TO GET THAT HASH NOT YAML, LOOK INTO DUMP
+            // THERE IS NO WAY THERE ISNT A WAY. IT WOULD BE DUMB IF THEIR WASNT.
+            let question_name = question.0.as_str().unwrap().to_string();
+            let available_answers = question.1.into_hash().unwrap();
+            for (thing, thing1) in available_answers {
+                thing = thing.into_string();
+            }
+            println!("{:?}", available_answers);
+            available_answers.entry(String::from("Question Name")).or_insert(question_name);
+
+
+
+
+            println!("{:?}", question);
+    
+        }
+
+        Quiz::create_quiz(quiz_name, questions_and_answers, quiz_metadata);
+        // println!("{:#?}", type_of(questions));
+        // println!("*************************************************************************************");
+
+    }
+
+
+
+    println!("ignore return, its just for now...");
+    Quiz::create_dev_quiz()
+}
+
+pub fn populate_master_quiz() {
+    // read all files in quiz folder and populate master quiz.
+    // not in scope for 1st Deliverable
+}
+
+fn type_of<T>(_: T) -> &'static str {
+    type_name::<T>()
 }

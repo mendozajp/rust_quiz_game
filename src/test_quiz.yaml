@@ -1,59 +1,21 @@
-Question 1:
-  What is your name?:
-    A1: Jordy
-    A2: Simon
-    A3: Jeffry
-    A4: Rogger
-    CA: 1
+How well do you know Jordy?:
+  What is his name?:
+    1: Jordy
+    2: Simon
+    3: Jeffry
+    4: Rogger
+    Answer: 1
 
-Question 2:
-  what is your favorite color?:
-    A1: Blue
-    A2: Red
-    A3: Orange
-    A4: Black
-    CA: 4
+  what is his favorite color?:
+    1: Blue
+    2: Red
+    3: Orange
+    4: Black
+    Answer: 4
 
-Question 3:
-  What is your favorite drink?:
-    A1: Tea
-    A2: Coffee
-    A3: Soda
-    A4: Beer
-    CA: 2
-
-
-
-# # Coulpe of questions here:
-# 1. Do we need the Question number? maybe for indexing and referencing? but we dont really want people looking at the yaml
-# file, since it would be cheating. I guess it doesnt really matter? 
-# 2. Quiz Metadata I think for now is out of scope. But thinking ahead, do we want to be reading that from here?
-#   What if we let the user write notes for the question as a sort of hint for themselves? 
-#   That gave me a seperate thought, what if we give each yaml file answer an optional metadata section 
-#   for explinations on why thats the right answer or any other relevent infomation. That wouldnt normally be present
-#   to the user but it might be displayed after either the correct or wrong answer is chosen. 
-
-
-# # [
-# #   Hash({
-# #     String("Question 1"): 
-# #     Hash({String("What is your name?"): 
-# #       Hash({String("A1"): String("Jordy"), 
-# #       String("A2"): String("Simon"), 
-# #       String("A3"): String("Jeffry"), 
-# #       String("A4"): String("Rogger"), 
-# #       String("CA"): Integer(1)})}), 
-# #   String("Question 2"): 
-# #     Hash({String("what is your favorite color?"):  
-# #       Hash({String("A1"): String("Blue"),  
-# #       String("A2"): String("Red"), 
-# #       String("A3"): String("Orange"), 
-# #       String("A4"): String("Black"), 
-# #       String("CA"): Integer(4)})}), 
-# #   String("Question 3"): 
-# #     Hash({String("What is your favorite drink?"): 
-# #       Hash({String("A1"): String("Tea"), 
-# #       String("A2"): String("Coffee"), 
-# #       String("A3"): String("Soda"), 
-# #       String("A4"): String("Beer"), 
-# #       String("CA"): Integer(2)})})})]
+  What is his favorite drink?:
+    1: Tea
+    2: Coffee
+    3: Soda
+    4: Beer
+    Answer: 2
