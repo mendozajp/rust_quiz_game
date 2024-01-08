@@ -115,7 +115,13 @@ pub fn load_quiz_from_yaml(path: &Path) -> Quiz{
         let questions_and_answers: Vec<HashMap<String, String>> = Vec::new();
         let quiz_metadata = vec![None, None];
 
+        let mut counter = 0;
         for question in questions.1.as_hash().unwrap() {
+            
+            println!("{} - {:?}", counter, question);
+            counter += 1;
+
+            
             // here you are going to be looping over all of the questions.
             // .1 is a hashmap with all the answers and the answer and .0 is the question name
             // if you can put .0 in .1s hash map with "question name" then we can just push it 
@@ -124,22 +130,22 @@ pub fn load_quiz_from_yaml(path: &Path) -> Quiz{
 
             // TODO: FIND OUT HOW TO GET THAT HASH NOT YAML, LOOK INTO DUMP
             // THERE IS NO WAY THERE ISNT A WAY. IT WOULD BE DUMB IF THEIR WASNT.
-            let question_name = question.0.as_str().unwrap().to_string();
-            let available_answers = question.1.into_hash().unwrap();
-            for (thing, thing1) in available_answers { // pretty sure this is not how rust works
-                thing = thing.into_string();            // spend some time looking at the yaml library
-            }                                           // think it will be helpful in the future too.
-            println!("{:?}", available_answers);
-            available_answers.entry(String::from("Question Name")).or_insert(question_name);
+            // let question_name = question.0.as_str().unwrap().to_string();
+            // let available_answers = question.1.into_hash().unwrap();
+            // for (thing, thing1) in available_answers { // pretty sure this is not how rust works
+            //     thing = thing.into_string();            // spend some time looking at the yaml library
+            // }                                           // think it will be helpful in the future too.
+            // println!("{:?}", available_answers);
+            // available_answers.entry(String::from("Question Name")).or_insert(question_name);
 
 
 
 
-            println!("{:?}", question);
+            // println!("{:?}", question);
     
         }
 
-        Quiz::create_quiz(quiz_name, questions_and_answers, quiz_metadata);
+        // Quiz::create_quiz(quiz_name, questions_and_answers, quiz_metadata);
         // println!("{:#?}", type_of(questions));
         // println!("*************************************************************************************");
 
