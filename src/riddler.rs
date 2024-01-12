@@ -35,7 +35,7 @@ pub struct Quiz {
     // what else do we need in here though? why make this a struct? 
 }
 
-impl QuizQuestionv2{
+impl QuizQuestionv2 {
     
     /// returns the questions of a quiz in a struct. 
     /// note by the nature of hash these will not be in order 
@@ -98,23 +98,24 @@ impl Quiz{
 }
 
 
-pub fn load_quiz_from_yaml(path: &Path) -> Vec<Quiz>{
-    //TODO: Confirm path exists and catch
+/// loads a quiz from a yaml file, should be able to do multiple at once but since we will be switching 
+/// over to toml files, funcitonality will not be added. 
+pub fn load_quiz_from_yaml(path: &Path) -> Quiz {
     let mut quizes: Vec<Quiz> = Vec::new();
     let file_contents = fs::read_to_string(path)
         .expect("Should have been able to read the file. Is this the correct path?");
 
     let quiz_file = YamlLoader::load_from_str(&file_contents).unwrap();
-
-    // println!("{:#?}", type_of(&quiz_file));
-    println!("{:#?}", type_of(&quiz_file[0][0]));
-    println!("{:#?}", type_of(&quiz_file[0]));
+    let mut quiz_name = String::new();
+    let mut questions_and_answers: Vec<HashMap<String, String>> = Vec::new();
+    let mut real_question_answer = QuizQuestionv2::create_test_quiz_questions();
+    let quiz_metadata: Vec<Option<String>> = vec![None, None];
 
 
     for questions in quiz_file[0].as_hash().unwrap() { // will only get one file/quiz
-        let quiz_name = questions.0.as_str().unwrap().to_string();
-        let mut questions_and_answers: Vec<HashMap<String, String>> = Vec::new();
-        let quiz_metadata: Vec<Option<String>> = vec![None, None];
+        quiz_name = questions.0.as_str().unwrap().to_string();
+        // let mut questions_and_answers: Vec<HashMap<String, String>> = Vec::new();
+        // let quiz_metadata: Vec<Option<String>> = vec![None, None];
 
         let mut counter = 0;
         for question in questions.1.as_hash().unwrap() {
@@ -122,13 +123,10 @@ pub fn load_quiz_from_yaml(path: &Path) -> Vec<Quiz>{
             let question_name = question.0.clone().into_string();
             let mut available_answers: HashMap<String, String> = HashMap::new();
 
-            println!();
-
             let lines = question.1.clone().into_hash().unwrap();
             let mut counter = 0;
             for k in lines{
                 counter += 1;
-                println!("[{}] - base expected -  key - {:?} -- value - {:?}", counter, k.0, k.1);
                 let mut key = Some(String::from("")); 
                 let mut answer = Some(String::from("")); 
                 let mut emergency = Some(90);
@@ -152,37 +150,29 @@ pub fn load_quiz_from_yaml(path: &Path) -> Vec<Quiz>{
                     }
                 }
 
-
                 if key_flag || value_flag {
                     failsafe = emergency.unwrap().to_string();
+                    if key_flag{
+                        available_answers.insert(failsafe, answer.unwrap());
+                    }
+                    else if value_flag{
+                        available_answers.insert(key.unwrap(), failsafe);
+    
+                    }
                 }
-
-                if key_flag{
-                    println!("[{}] - results after conversion -  key - {:?} -- value - {:?}", counter, failsafe, answer);
-                    available_answers.insert(failsafe, answer.unwrap());
-
-                }
-                else if value_flag{
-                    println!("[{}] - results after conversion -  key - {:?} -- value - {:?}", counter, key, failsafe);
-                    available_answers.insert(key.unwrap(), failsafe);
-
-                } else {
-                    println!("[{}] - results after conversion -  key - {:?} -- value - {:?}", counter, key, answer);
+                 else {
                     available_answers.insert(key.unwrap(), answer.unwrap());
-
                 }
-                println!("{:?}", available_answers);
-
             }
             available_answers.insert(String::from("Question Name"), question_name.unwrap());
             questions_and_answers.push(available_answers);
         }
-        println!("final result - {:?}", &questions_and_answers);
-        let questions_and_answers = QuizQuestionv2{question_and_answers: questions_and_answers};
-        quizes.push(Quiz::create_quiz(quiz_name, questions_and_answers, quiz_metadata));
+        real_question_answer = QuizQuestionv2{question_and_answers: questions_and_answers.clone()};
+        // quizes.push(Quiz::create_quiz(quiz_name, questions_and_answers, quiz_metadata));
     }
-    println!("{:#?}",quizes);
-    quizes
+    Quiz::create_quiz(quiz_name, real_question_answer, quiz_metadata)
+    // let single_quiz = quizes[0]; 
+    // return quizes.into_inter().nth(0);
 }
         
 
