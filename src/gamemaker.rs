@@ -110,7 +110,7 @@ fn report_outcome(results: Vec<bool>) {
     let number_of_correct_answers = results.iter().filter(|&result| *result == true).count();
 
     if number_of_correct_answers > total_number_of_questions / 2 {
-        println!("Whoa! You're awesome!");
+        println!("Sheeesh, good shit!");
     }
     else {
         println!("Damn! You fucking suck...");

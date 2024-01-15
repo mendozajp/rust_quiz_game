@@ -1,0 +1,21 @@
+How well do you know Jordy?:
+  What is his name?:
+    1: Jordy
+    2: Simon
+    3: Jeffry
+    4: Rogger
+    Answer: 1
+
+  what is his favorite color?:
+    1: Blue
+    2: Red
+    3: Orange
+    4: Black
+    Answer: 4
+
+  What is his favorite drink?:
+    1: Tea
+    2: Coffee
+    3: Soda
+    4: Beer
+    Answer: 2
