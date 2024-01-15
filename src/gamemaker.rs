@@ -1,17 +1,12 @@
 use std::fs;
 use std::path::Path;
-// this file should house all the logic for actually running the quizes, so higher level then riddler. 
-// to be a library though, wont be necessary for first iteration
-// mod riddler;
 use std::{io, collections::HashMap};
-use std::io::BufRead;
-
-use crate::gamemaker::riddler::load_quiz_from_yaml;
 
 use self::riddler::Quiz;
 #[path = "riddler.rs"]
 mod riddler;
 
+/// displays prompts for user to begin playing. This is the entry state of the game. 
 pub fn start_up_screen() {
     println!("Welcome To Quiz Show!\n");
     println!("Loading all available quizes...");
@@ -20,13 +15,6 @@ pub fn start_up_screen() {
     println!("Type the name of one of the following quizes to run that quiz:");
     display_available_quizes(&quizes);
     println!("The quiz will start when you hit enter. Type 'exit' to quit.");
-
-    // let stdin = io::stdin();
-    // stdin.lock().lines().next();
-
-    // println!("{:#?}",quizes);
-    // println!("{:#?}",quiz_names);
-
 
     let mut chosen_quiz_name = String::new();
 
@@ -43,7 +31,7 @@ pub fn start_up_screen() {
         if quiz_names.contains(&quiz_to_do) {
             let results = start_quiz(ready_quiz(&quiz_to_do,quizes));
             report_outcome(results); // TODO: MAKE RETURN A BOOL FOR LOOP if they want to do another quiz
-            break;                
+            break;
         }
         else {
             println!("That is not an available quiz, please type the name of one of one of the ");
@@ -53,18 +41,17 @@ pub fn start_up_screen() {
             .expect("Failed to read line");
         }
     }
-
-    // let results = start_quiz(ready_quiz("dev_test"));
-    // report_outcome(results); // TODO: MAKE RETURN A BOOL FOR LOOP if they want to do another quiz
 }
 
+/// reads all yaml files in src/quizes and loaded them into memory
+/// to be displayed in startup screen. 
 pub fn load_stored_quizes() -> (Vec<riddler::Quiz>,Vec<String>) {
     let mut cached_quizes: Vec<Quiz> = Vec::new();
     let mut name_of_quizes: Vec<String> = Vec::new();
     let paths = fs::read_dir("src/quizes/").unwrap();
 
     for path in paths {
-        cached_quizes.push(load_quiz_from_yaml(&path.unwrap().path()));
+        cached_quizes.push(riddler::load_quiz_from_yaml(&path.unwrap().path()));
     }
     for quiz in &cached_quizes {
         name_of_quizes.push(quiz.quiz_name.clone());
@@ -72,6 +59,7 @@ pub fn load_stored_quizes() -> (Vec<riddler::Quiz>,Vec<String>) {
     (cached_quizes, name_of_quizes)
 }
 
+/// print all quizes for user.
 pub fn display_available_quizes(cached_quizes: &Vec<riddler::Quiz>) {
     for quiz in cached_quizes{
         println!("{}",quiz.quiz_name);
@@ -94,17 +82,12 @@ fn ready_quiz(test_name: &str, quizes: Vec<Quiz>) -> riddler::Quiz {
     return riddler::Quiz::create_dev_quiz();
 }
 
+/// changes state to quiz, implemented to house future work. 
 fn start_quiz(quiz: riddler::Quiz) -> Vec<bool>{
-    // you should do a bash reset here, look into it later
-    // looks like we dont need this but im setting up for initing the env later. 
-
-    // display title - maybe number of questions left. maybe time? not in scope now though.
-    // if we end up doing resets after every question, which for now until we add everything else we probably should,
-    // we need to constantly keep showing the quiz name, the header i guess i should say. 
     cycle_through_questions(quiz.quiz_questions)
 }
 
-/// only thing this should say now is how many you got right out of how many you got wrong. 
+/// displays outcome of current quiz to user.
 fn report_outcome(results: Vec<bool>) {
     let total_number_of_questions = results.len();
     let number_of_correct_answers = results.iter().filter(|&result| *result == true).count();
@@ -120,7 +103,8 @@ fn report_outcome(results: Vec<bool>) {
         number_of_correct_answers, total_number_of_questions);
 }
 
-/// display current question and answers, provide numbers for user to enter 
+/// display current question and answers, provide numbers for user to enter and return true or
+/// false if user chose the correct answer. 
 fn display_question(question: HashMap<String,String>) -> bool {
     // check with getting both question number and question
     let mut list_of_answers: Vec<(&String,&String)> = Vec::new();
@@ -172,6 +156,7 @@ fn display_question(question: HashMap<String,String>) -> bool {
     return false;
 }
 
+/// displays and saves all answers given by user for a given quiz.
 fn cycle_through_questions(questions: riddler::QuizQuestionv2) -> Vec<bool> {
     let mut results: Vec<bool> = Vec::new();
 
