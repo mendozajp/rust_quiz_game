@@ -1,3 +1,17 @@
+1/15/24
+Been a while. First deliverable has been reached. Instead of going to phase 2, I wanna do some refactoring and clean up. And since we need to get the rust cert for work, we'll need to plan ahead based on time. 
+The following should be completed before moving on to phase 2:
+- Make an enum for game state. Something like a conduct quiz and main menu. Probably have story and save and quit there too. 
+- Make a save state for conduct quiz state.
+- Refactor current functions.
+- Make enum for result publisher. (make a big list of comments for fun)
+- Remake quiz structures. Look for examples online. 
+- Write unit tests when all above are completed. 
+
+* Note that I know we didnt get the final note on completion of quiz, but its really not that important. 
+
+
+
 12/4/23
 We started before this data but this is when I made the read me so whatever.
 
@@ -26,8 +40,6 @@ After this point it should look pretty nice, but it wont be anything more then a
 
 Then the final objective, and what upon completion would constitue the game as being completed, would be the actual 
 quiz show format, were you get a collection of a couple of quizes, and play against some bots. 
-
-
 
 I think each task is pretty large but each are pretty similar is level of workload. 
 On workdays lets update our progress here and see how we do. 
