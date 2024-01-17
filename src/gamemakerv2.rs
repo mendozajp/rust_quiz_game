@@ -30,7 +30,23 @@ fn start_up_screen() {
 
 /// Game state - Single Examination
 /// Guides user through quiz, prompts for every question and returns result upon completion.
-fn single_examination() {}
+fn single_examination() {
+    fn prompt_user_for_quiz() {}
+    fn take_quiz() {} // if display impl works out, we can have it all in there anyways.
+    fn show_result() {}
+
+    /// Should return random message from pool of corresponding grade.
+    /// I say have 10 of each if you can manage it.
+    /// also still not sure how we are gonna manage displaying messages from here.
+    /// but i think enum examples will give us what we need.
+    enum result_message_manager {
+        Grade_A,
+        Grade_B,
+        Grade_C,
+        Grade_D,
+        Grade_F,
+    }
+}
 
 /// Load all quiz toml files in quizes folder
 pub fn load_stored_quizes() -> Vec<riddler::Quiz> {
@@ -43,12 +59,6 @@ pub fn load_stored_quizes() -> Vec<riddler::Quiz> {
     cached_quizes
 }
 
-/// Should return random message from pool of corresponding grade.
-/// I say have 10 of each if you can manage it.
-enum result_message_manager {
-    A,
-    B,
-    C,
-    D,
-    F,
-}
+pub fn prompt_for_continued_action() {}
+
+pub fn save_and_quit() {}

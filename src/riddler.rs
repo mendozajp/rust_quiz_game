@@ -1,7 +1,9 @@
 use std::collections::HashMap;
+use std::path::Display;
 use std::{fs, path::Path};
 extern crate yaml_rust;
 use serde::Deserialize;
+use std::fmt;
 use toml;
 
 #[derive(Debug, Deserialize)]
@@ -20,6 +22,8 @@ pub struct Question {
     pub answer4: String,
     pub correct_answer: i8,
 }
+
+impl fmt::Display for Question {}
 
 /// Load a toml quiz file into memory
 /// TODO: Add readability for multiple quizes in one file
