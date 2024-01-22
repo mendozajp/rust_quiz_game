@@ -18,13 +18,23 @@ fn start_up_screen() {
     println!("Single Examination");
     println!("Game Show(not implemented yet)");
 
-    let mut action = String::new();
+    let mut user_action = String::new();
 
     loop {
         // until they type a quiz name or exit
         io::stdin()
             .read_line(&mut action)
             .expect("Failed to read line");
+
+        let action = String::from(user_action.trim());
+
+        if action == "exit" {
+            break;
+        }
+
+        if action == "Single Examination" {
+            handle_user_action(Game_State::singleExamination);
+        }
     }
 }
 
