@@ -9,7 +9,21 @@ enum Game_State {
 
 /// Main transition state for the player.
 /// Starts and stops all states of the game.
+/// /// yo this could be the blocking prompt for new state that is run at the end of every other state
 pub fn handle_user_action(action: Game_State) {}
+
+fn main_loop() {
+    let mut game_state: Game_State = Game_State::startUpScreen;
+    // add load save here if available
+    loop {
+        match game_state {
+            Game_State::startUpScreen => game_state = start_up_screen(),
+            Game_State::singleExamination => game_state = single_examination(),
+            Game_State::gameShow => game_state = game_show(),
+            Game_State::saveAndQuit => game_state = save_and_quit(),
+        }
+    }
+}
 
 // Game State - Start up Screen
 fn start_up_screen() {
@@ -69,6 +83,6 @@ pub fn load_stored_quizes() -> Vec<riddler::Quiz> {
     cached_quizes
 }
 
-pub fn prompt_for_continued_action() {}
+pub fn game_show() {}
 
 pub fn save_and_quit() {}
