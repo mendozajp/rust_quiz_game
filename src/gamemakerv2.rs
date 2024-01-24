@@ -2,6 +2,8 @@ use std::{fs, io};
 
 #[path = "riddler.rs"]
 mod riddler;
+#[path = "single_examination.rs"]
+mod single_examination;
 
 /// framing enum for the whole project, you will at all times be in one of these states. Make sure
 /// the code reflext that.
@@ -73,44 +75,30 @@ fn start_up_screen() -> GameState {
 /// Game state - Single Examination
 /// Guides user through quiz, prompts for every question and returns result upon completion.
 fn single_examination() -> GameState {
-    fn prompt_user_for_quiz() {
-        let quizes: Vec<riddler::Quiz> = load_stored_quizes();
-        println!("Quizes available for testing:");
-        for quiz in quizes {
-            println!("{}", quiz.quiz_name);
-        }
-        println!("Please enter one of the above displayed quizes to start.");
-        let user_input = read_input();
+    let quizes = riddler::Quizes::setup_single_examination();
+    let mut main_quiz: riddler::Quiz;
+
+    println!("Quizes available for testing:");
+    for quiz in single_examination.available_quizes {
+        println!("{}", quiz.quiz_name);
     }
+
+    println!("Please enter one of the above displayed quizes to start.");
+    let user_input = read_input();
+
+    for quiz in single_examination.available_quizes {
+        if user_input == quiz.quiz_name {
+            main_quiz = quiz; // seperate and return that single quiz.
+        }
+    }
+
+    println!("quiz to be preformed: {:?}", main_quiz);
+    println!("just showing it off, cant start yet.");
 
     fn take_quiz() {} // if display impl works out, we can have it all in there anyways.
     fn show_result() {}
 
-    /// Should return random message from pool of corresponding grade.
-    /// I say have 10 of each if you can manage it.
-    /// also still not sure how we are gonna manage displaying messages from here.
-    /// but i think enum examples will give us what we need.
-    enum ResultMessageManager {
-        GradeA,
-        GradeB,
-        GradeC,
-        GradeD,
-        GradeF,
-    }
-
-    prompt_user_for_quiz();
     return handle_user_action();
-}
-
-/// Load all quiz toml files in quizes folder
-pub fn load_stored_quizes() -> Vec<riddler::Quiz> {
-    let mut cached_quizes: Vec<riddler::Quiz> = Vec::new();
-    let paths = fs::read_dir("src/quizes/").unwrap();
-
-    for path in paths {
-        cached_quizes.push(riddler::load_quiz_from_toml(&path.unwrap().path()));
-    }
-    cached_quizes
 }
 
 fn game_show() -> GameState {
