@@ -25,6 +25,12 @@ impl Quizes {
             available_quizes: Quizes::load_stored_quizes(),
         }
     }
+
+    pub fn display_quiz_names(self) {
+        for quiz in self.available_quizes {
+            println!("{}", quiz.quiz_name);
+        }
+    }
 }
 
 #[derive(Debug, Deserialize, Clone)]
