@@ -44,3 +44,19 @@ quiz show format, were you get a collection of a couple of quizes, and play agai
 I think each task is pretty large but each are pretty similar is level of workload. 
 On workdays lets update our progress here and see how we do. 
 
+
+
+
+
+
+
+single examination template:
+quiz_name = ""
+[questions]
+    [questions.question1]
+    question = ""
+    answer1 = ""
+    answer2 = ""
+    answer3 = ""
+    answer4 = ""
+    correct_answer = 0

@@ -25,6 +25,7 @@ pub struct Question {
 pub fn load_quiz_from_toml(path: &Path) -> Quiz {
     let toml_str = fs::read_to_string(path).expect("Failed to read toml file");
     let quiz: Quiz = toml::from_str(&toml_str).expect("Failed to deserialize toml file");
+    println!("{:?}", quiz);
 
     return quiz;
 }

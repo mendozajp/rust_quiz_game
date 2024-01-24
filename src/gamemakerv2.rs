@@ -24,12 +24,7 @@ fn handle_user_action() -> GameState {
         println!("Single Examination");
         println!("Game Show");
 
-        let mut action = String::new();
-        io::stdin()
-            .read_line(&mut action)
-            .expect("Failed to read line");
-
-        let user_action = String::from(action.trim()).to_lowercase();
+        let user_action = read_input();
 
         println!();
         match user_action.as_str() {
@@ -60,6 +55,15 @@ pub fn main_loop() {
     println!("Thank you for playing!");
 }
 
+fn read_input() -> String {
+    let mut input = String::new();
+    io::stdin()
+        .read_line(&mut input)
+        .expect("Failed to read line");
+
+    String::from(input.trim()).to_lowercase()
+}
+
 // Game State - Start up Screen
 fn start_up_screen() -> GameState {
     println!("Welcome To Quiz Show!\n");
@@ -69,7 +73,16 @@ fn start_up_screen() -> GameState {
 /// Game state - Single Examination
 /// Guides user through quiz, prompts for every question and returns result upon completion.
 fn single_examination() -> GameState {
-    fn prompt_user_for_quiz() {}
+    fn prompt_user_for_quiz() {
+        let quizes: Vec<riddler::Quiz> = load_stored_quizes();
+        println!("Quizes available for testing:");
+        for quiz in quizes {
+            println!("{}", quiz.quiz_name);
+        }
+        println!("Please enter one of the above displayed quizes to start.");
+        let user_input = read_input();
+    }
+
     fn take_quiz() {} // if display impl works out, we can have it all in there anyways.
     fn show_result() {}
 
@@ -77,19 +90,20 @@ fn single_examination() -> GameState {
     /// I say have 10 of each if you can manage it.
     /// also still not sure how we are gonna manage displaying messages from here.
     /// but i think enum examples will give us what we need.
-    enum result_message_manager {
-        Grade_A,
-        Grade_B,
-        Grade_C,
-        Grade_D,
-        Grade_F,
+    enum ResultMessageManager {
+        GradeA,
+        GradeB,
+        GradeC,
+        GradeD,
+        GradeF,
     }
-    println!("Appologies, this game mode has not been implemented yet.");
+
+    prompt_user_for_quiz();
     return handle_user_action();
 }
 
 /// Load all quiz toml files in quizes folder
-fn load_stored_quizes() -> Vec<riddler::Quiz> {
+pub fn load_stored_quizes() -> Vec<riddler::Quiz> {
     let mut cached_quizes: Vec<riddler::Quiz> = Vec::new();
     let paths = fs::read_dir("src/quizes/").unwrap();
 
