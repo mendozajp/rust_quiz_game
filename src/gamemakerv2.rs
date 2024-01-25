@@ -1,5 +1,7 @@
 use std::{fs, io};
 
+use crate::{gamemakerv2::riddler::Quiz, riddler::Quiz};
+
 #[path = "riddler.rs"]
 mod riddler;
 #[path = "single_examination.rs"]
@@ -79,22 +81,28 @@ fn single_examination() -> GameState {
     let mut main_quiz: riddler::Quiz;
 
     println!("Quizes available for testing:");
-    for quiz in single_examination.available_quizes {
+    for quiz in quizes.available_quizes {
         println!("{}", quiz.quiz_name);
     }
 
     println!("Please enter one of the above displayed quizes to start.");
     let user_input = read_input();
 
-    for quiz in single_examination.available_quizes {
-        if user_input == quiz.quiz_name {
-            main_quiz = quiz; // seperate and return that single quiz.
-        }
-    }
+    ready_quiz(user_input, quizes.clone());
+
+    // handle output of ready quiz here. then impl take quiz with that output or prompt for other name if not valid
 
     println!("quiz to be preformed: {:?}", main_quiz);
     println!("just showing it off, cant start yet.");
 
+    fn ready_quiz(user_input: String, quizes: riddler::Quizes) -> Option<Quiz> {
+        for quiz in quizes.available_quizes {
+            if user_input == quiz.quiz_name {
+                return Some(quiz); // seperate and return that single quiz.
+            }
+        }
+        return None;
+    }
     fn take_quiz() {} // if display impl works out, we can have it all in there anyways.
     fn show_result() {}
 

@@ -4,6 +4,7 @@ use std::collections::HashMap;
 use std::{fs, path::Path};
 use toml;
 
+#[derive(Clone)]
 pub struct Quizes {
     pub available_quizes: Vec<Quiz>,
 }
@@ -30,6 +31,13 @@ impl Quizes {
         for quiz in self.available_quizes {
             println!("{}", quiz.quiz_name);
         }
+    }
+
+    pub fn ready_quiz(self, input_quiz_name: String) -> Quiz {
+        let quiz: Quiz;
+
+        // fuck dude. i have no idea how to do this.
+        return quiz;
     }
 }
 
