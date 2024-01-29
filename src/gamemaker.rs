@@ -1,13 +1,14 @@
+use rust_quiz_game::riddler;
+
 #[path = "tools.rs"]
 mod tools;
 
-/// framing enum for the whole project, you will at all times be in one of these states. Make sure
-/// the code reflext that.
+/// framing enum for the whole game, at all times you will be in one of these states.
 enum GameState {
     StartUpScreen,
     SingleExamination,
     GameShow,
-    SaveAndQuit, // watch for save and quiz on other states.
+    SaveAndQuit, // watch for save and quit on other states.
     QuitGame,
 }
 
@@ -54,7 +55,8 @@ pub fn main_loop() {
     println!("Thank you for playing!");
 }
 
-// Game State - Start up Screen
+/// Game State - Start up Screen
+/// Currently doesnt do anything but welcome user to game.
 fn start_up_screen() -> GameState {
     println!("Welcome To Quiz Show!\n");
     return handle_user_action();
@@ -63,27 +65,27 @@ fn start_up_screen() -> GameState {
 /// Game state - Single Examination
 /// Guides user through quiz, prompts for every question and returns result upon completion.
 fn single_examination() -> GameState {
-    let quizes = rust_quiz_game::Quizes::setup_single_examination();
-    let mut quiz: Option<rust_quiz_game::Quiz>;
+    let quizes = riddler::Quizes::setup_single_examination();
+    let mut quiz: Option<riddler::Quiz>;
 
     println!("Quizes available for testing:");
     quizes.display_quiz_names();
 
     loop {
-        let quizes = rust_quiz_game::Quizes::setup_single_examination();
+        let quizes = riddler::Quizes::setup_single_examination();
         println!("Please enter one of the above displayed quizes to start");
         let user_input = tools::read_input();
 
         quiz = quizes.ready_quiz(user_input);
         if quiz.is_none() {
-            println!("Quiz not valid");
+            println!("Quiz not available, confirm spelling.");
             continue;
         }
         break;
     }
 
     let quiz = quiz.unwrap();
-    rust_quiz_game::Quiz::show_result(quiz.clone().take_quiz(), quiz.questions.len() as i32);
+    riddler::Quiz::show_result(quiz.clone().take_quiz(), quiz.questions.len() as i32);
 
     return handle_user_action();
 }
