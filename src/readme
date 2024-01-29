@@ -1,3 +1,16 @@
+1/29/24
+Took a bit longer then expected, but it looks good. A lot cleaner and just kinda makes more sense. Didnt meet 2 of the objectives. We have to do those now. 
+2 things left for the rust cert. We can think about game show if this is not enough AFTER the initial submission.
+ - Save and quit functionality and load save state functionality ( this is the biggest one )
+ - unit tests for everything you have so far. refer to the rust cert for more details but you need at least 80% coverage. 
+
+Once this is done, put up a pr, and find a way to take some notes and refer them to here. Addresing their notes is the next step after this one, given no problems with this step. 
+
+
+
+
+
+
 1/15/24
 Been a while. First deliverable has been reached. Instead of going to phase 2, I wanna do some refactoring and clean up. And since we need to get the rust cert for work, we'll need to plan ahead based on time. 
 The following should be completed before moving on to phase 2:
