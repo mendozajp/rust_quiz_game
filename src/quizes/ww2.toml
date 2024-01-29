@@ -1,0 +1,17 @@
+quiz_name = "How well do you know World War 2?"
+[questions]
+    [questions.question1]
+    question = "World War II started when Germany invaded which country?"
+    answer1 = "Belgium"
+    answer2 = "France"
+    answer3 = "Poland"
+    answer4 = "Great Britain"
+    correct_answer = 3
+  
+    [questions.question2]
+    question = "Which of these best describes blitzkrieg, which was key to Germany’s early success in the war?"
+    answer1 = "High-level espionage"
+    answer2 = "Economic sanctions"
+    answer3 = "Quick coordinated attacks"
+    answer4 = "Propaganda"
+    correct_answer = 3

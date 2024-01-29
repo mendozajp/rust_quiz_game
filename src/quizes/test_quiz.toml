@@ -1,0 +1,25 @@
+quiz_name = "Test Quiz1"
+[questions]
+    [questions.question1]
+    question = "What is Jordy's Name?" 
+    answer1 = "Jordy"
+    answer2 = "Tom"
+    answer3 = "Goat"
+    answer4 = "Richard"
+    correct_answer = 1 
+    
+    [questions.question2]
+    question = "What is Jordy's Favorite Color?"
+    answer1 = "Orange"
+    answer2 = "Black"
+    answer3 = "Purple"
+    answer4 = "Gold"
+    correct_answer = 2
+    
+    [questions.question3]
+    question = "What is Jordy's Favorite Drink?"
+    answer1 = "Tea"
+    answer2 = "Beer"
+    answer3 = "Coffee"
+    answer4 = "Soda"
+    correct_answer = 3
