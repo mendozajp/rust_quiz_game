@@ -35,6 +35,7 @@ fn handle_user_action() -> GameState {
 
 // main loop for switching between game states
 pub fn main_loop(arg_file: Option<String>) {
+    tools::clear_terminal();
     let mut game_state: GameState = match arg_file {
         Some(file_path) => {
             let loaded_quiz: SavedQuiz = load_single_exam_save_file(file_path);
@@ -43,10 +44,8 @@ pub fn main_loop(arg_file: Option<String>) {
         None => start_up_screen(),
     };
     loop {
-        // should have a shell reset here to keep things clean
-        for _ in 0..3 {
-            println!(); // TODO: replace with bash reset
-        }
+        tools::clear_terminal();
+
         game_state = match game_state {
             GameState::StartUpScreen => start_up_screen(),
             GameState::SingleExamination => single_examination(None),

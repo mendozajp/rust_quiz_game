@@ -81,7 +81,6 @@ impl Quizes {
         for single_quiz in self.available_quizes {
             if input_quiz_name == single_quiz.quiz_name.trim().to_lowercase() {
                 quiz = Some(single_quiz.clone());
-                println!(); // spacing
             }
         }
 
@@ -133,7 +132,7 @@ impl Quiz {
         Some(score)
     }
     pub fn show_result(score: i32, total_questions: i32) {
-        println!(); // spacing
+        tools::clear_terminal();
         let grade_number = score * 100 / total_questions;
         fn _print_random_grade_message(grade: char) {
             let a = vec![
@@ -261,7 +260,9 @@ impl Quiz {
             }
             _ => unreachable!(),
         }
-        println!() // spacing
+        for _ in 0..3 {
+            println!();
+        }
     }
 }
 
@@ -277,7 +278,7 @@ pub struct Question {
 
 impl Question {
     fn ask_question(&self) -> Option<bool> {
-        // this should be referenced, but moves the question here. i think. though its in a loop so it being in a different scope pretty much does that already.
+        tools::clear_terminal();
         println!("{}", self.question);
 
         // shuffle order of answers to be displayed with an answer key to reference later when
@@ -298,7 +299,7 @@ impl Question {
         }
 
         for answer in answers.iter().enumerate() {
-            println!("[{}] {}", answer.0, answer.1);
+            println!("[{}] {}", answer.0 + 1, answer.1);
         }
         println!("Enter the number next to the answer you beleive is correct.");
         loop {
@@ -321,7 +322,7 @@ impl Question {
                 continue;
             }
             println!();
-            if shuffle_answer_key[user_answer] == self.correct_answer {
+            if shuffle_answer_key[user_answer - 1] == self.correct_answer {
                 return Some(true);
             } else {
                 return Some(false);
