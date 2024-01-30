@@ -1,6 +1,4 @@
-use std::path::Path;
-
-use rust_quiz_game::riddler::{self, SavedQuiz};
+use rust_quiz_game::riddler::{self, load_single_exam_save_file, SavedQuiz};
 
 #[path = "tools.rs"]
 mod tools;
@@ -37,8 +35,11 @@ fn handle_user_action() -> GameState {
 
 // main loop for switching between game states
 pub fn main_loop(arg_file: Option<String>) {
-    let game_state: GameState = match arg_file {
-        Some(String) => single_examination(Some(saved_quiz)),
+    let mut game_state: GameState = match arg_file {
+        Some(file_path) => {
+            let loaded_quiz: SavedQuiz = load_single_exam_save_file(file_path);
+            single_examination(Some(loaded_quiz))
+        }
         None => start_up_screen(),
     };
     // add load save here if available
@@ -47,7 +48,7 @@ pub fn main_loop(arg_file: Option<String>) {
         for _ in 0..3 {
             println!(); // TODO: replace with bash reset
         }
-        let game_state: GameState = match game_state {
+        game_state = match game_state {
             GameState::StartUpScreen => start_up_screen(),
             GameState::SingleExamination => single_examination(None),
             GameState::GameShow => game_show(),
@@ -67,6 +68,13 @@ fn start_up_screen() -> GameState {
 /// Game state - Single Examination
 /// Guides user through quiz, prompts for every question and returns result upon completion.
 fn single_examination(saved_quiz: Option<SavedQuiz>) -> GameState {
+    match saved_quiz {
+        None => {
+            println!("We have a saved quiz!!");
+            return handle_user_action();
+        }
+        Some(_) => (),
+    }
     let quizes = riddler::Quizes::setup_single_examination();
     let mut quiz: Option<riddler::Quiz>;
 
@@ -91,7 +99,12 @@ fn single_examination(saved_quiz: Option<SavedQuiz>) -> GameState {
     }
 
     let quiz = quiz.unwrap();
-    riddler::Quiz::show_result(quiz.clone().take_quiz(), quiz.questions.len() as i32);
+    if let Some(score) = riddler::Quiz::take_quiz(quiz.clone()) {
+        riddler::Quiz::show_result(score, quiz.questions.len() as i32);
+    } else {
+        println!("Progress saved, into file at src dir.");
+        return GameState::QuitGame;
+    }
 
     return handle_user_action();
 }

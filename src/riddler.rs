@@ -10,7 +10,8 @@ use toml;
 mod tools;
 
 /// Load a toml quiz file into memory
-pub fn load_single_exam_save_file(path: &Path) -> SavedQuiz {
+pub fn load_single_exam_save_file(path: String) -> SavedQuiz {
+    // TODO: Convert to file path
     let toml_str = fs::read_to_string(path).expect("Failed to read toml file");
     let saved_quiz: SavedQuiz = toml::from_str(&toml_str).expect("Failed to deserialize toml file");
 
@@ -19,7 +20,7 @@ pub fn load_single_exam_save_file(path: &Path) -> SavedQuiz {
 
 pub fn create_and_save_single_exam_save_file(
     quiz_to_save: Quiz,
-    answered_questions: Vec<bool>,
+    answered_questions: Vec<(String, bool)>,
 ) -> std::io::Result<()> {
     let saved_quiz = SavedQuiz {
         ordered_quiz: quiz_to_save,
@@ -43,7 +44,7 @@ pub fn create_and_save_single_exam_save_file(
 #[derive(Serialize, Deserialize)]
 pub struct SavedQuiz {
     ordered_quiz: Quiz,
-    answered_questions: Vec<bool>,
+    answered_questions: Vec<(String, bool)>, // question name and if answered correctly.
 }
 
 #[derive(Clone)]
@@ -96,35 +97,28 @@ pub struct Quiz {
 }
 
 impl Quiz {
-    pub fn take_quiz(self) -> i32 {
+    pub fn take_quiz(quiz: Quiz) -> Option<i32> {
         let mut score: i32 = 0;
-        let answered_questions_record = Vec::new();
+        let mut answered_questions_record: Vec<(String, bool)> = Vec::new();
 
         // Cycle through questions
-        for question in self.questions {
+        for question in quiz.questions {
             match question.1.ask_question() {
                 Some(true) => {
                     score += 1;
+                    answered_questions_record.push((String::from(question.0), true));
                 }
-                Some(false) => continue,
+                Some(false) => {
+                    answered_questions_record.push((String::from(question.0), false));
+                    continue;
+                }
                 None => {
-                    match create_and_save_single_exam_save_file(
-                        self.clone(),
-                        answered_questions_record,
-                    ) {
-                        Err(_) => {
-                            println!("Something went wrong with saving state. Abandoning.");
-                            return -2;
-                        }
-                        Ok(_) => {
-                            println!("Save State created. Quiting game...");
-                            return -1;
-                        }
-                    }
+                    // we have to do it here, we have no choice, after saving the file, quit game.
+                    return None;
                 }
             }
         }
-        score
+        Some(score)
     }
     pub fn show_result(score: i32, total_questions: i32) {
         println!(); // spacing
