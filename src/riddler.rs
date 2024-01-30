@@ -1,11 +1,50 @@
+use chrono::Local;
 use rand::{thread_rng, Rng};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::{fs, path::Path};
+use std::io::Write;
+use std::{fs, fs::File, path::Path};
 use toml;
 
 #[path = "tools.rs"]
 mod tools;
+
+/// Load a toml quiz file into memory
+pub fn load_single_exam_save_file(path: &Path) -> SavedQuiz {
+    let toml_str = fs::read_to_string(path).expect("Failed to read toml file");
+    let quiz: SavedQuiz = toml::from_str(&toml_str).expect("Failed to deserialize toml file");
+
+    return quiz;
+}
+
+pub fn create_single_exam_save_file(
+    quiz_to_save: Quiz,
+    answered_questions: Vec<bool>,
+) -> std::io::Result<()> {
+    let saved_quiz = SavedQuiz {
+        ordered_quiz: quiz_to_save,
+        answered_questions: answered_questions,
+    };
+    let saved_file: String = toml::to_string(&saved_quiz).expect("Failed to serialize toml file");
+    println!("DEBUG: {saved_file}");
+    let file_name = format!(
+        "{}_single_exam_save_file.toml",
+        Local::now().format("%d-%m-%Y_%H:%M")
+    );
+
+    let mut file = File::create(file_name)?;
+    file.write(saved_file.as_bytes())?;
+    Ok(())
+
+    // write to file
+    // exit - maybe throw in a handle user action but with a param forcing a specific game state?
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct SavedQuiz {
+    ordered_quiz: Quiz,
+    answered_questions: Vec<bool>,
+}
 
 #[derive(Clone)]
 pub struct Quizes {
@@ -50,7 +89,7 @@ impl Quizes {
     }
 }
 
-#[derive(Debug, Deserialize, Clone)]
+#[derive(Debug, Deserialize, Clone, Serialize)]
 pub struct Quiz {
     pub quiz_name: String,
     pub questions: HashMap<String, Question>,
@@ -82,7 +121,7 @@ impl Quiz {
             let b = vec![
                 "Nice.",
                 "Could've been better.",
-                "Alright, nice work!",
+                "Alright, good job!",
                 "Close enough I suppose.",
             ];
             let c = vec![
@@ -105,6 +144,7 @@ impl Quiz {
                 "Looks like all those brain cells really are gone.",
                 "Sheeesh, nice work bro.",
                 "Fucking dumb ass.",
+                "Bruh",
             ];
             let mut rng = thread_rng();
 
@@ -200,7 +240,7 @@ impl Quiz {
     }
 }
 
-#[derive(Debug, Deserialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Question {
     pub question: String,
     pub answer1: String,
@@ -212,6 +252,7 @@ pub struct Question {
 
 impl Question {
     fn ask_question(self) -> bool {
+        // this should be referenced, but moves the question here. i think. though its in a loop so it being in a different scope pretty much does that already.
         println!("{}", self.question);
         let mut answers = HashMap::new();
         answers.insert(1, self.answer1);

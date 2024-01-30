@@ -1,0 +1,201 @@
+quiz_name = "How well do you know Jordy?"
+[questions]
+    [questions.question1]
+    question = "What is Jordy's Favorite book?" 
+    answer1 = "The Alchemist"
+    answer2 = "The Odyssey"
+    answer3 = "The Divine Comedy: Inferno"
+    answer4 = "The Hitchhikers Guide to the Galaxy"
+    correct_answer = 1
+
+    [questions.question2]
+    question = "Jordy gets stabbed, what happens?" 
+    answer1 = "Nothing."
+    answer2 = "He dies."
+    answer3 = "He fights back."
+    answer4 = "He stabs them back."
+    correct_answer = 2
+    
+    [questions.question3]
+    question = "Who is Jordy's Favorite super hero?" 
+    answer1 = "Flash"
+    answer2 = "Professor X"
+    answer3 = "Doctor Strange"
+    answer4 = "Deadpool"
+    correct_answer = 3
+
+    [questions.question4]
+    question = "What is Jordy's Favorite anime?" 
+    answer1 = "School Rumble"
+    answer2 = "Cowbow Bebop"
+    answer3 = "Full Metal Alchemist"
+    answer4 = "Overlord"
+    correct_answer = 1
+
+    [questions.question5]
+    question = "In the thought experiment named The Ship of Theseus, at what point would Jordy consider the ship a new ship?" 
+    answer1 = "Anything > 0%"
+    answer2 = "50%"
+    answer3 = "100%"
+    answer4 = "Never"
+    correct_answer = 4 
+
+    [questions.question6]
+    question = "What is Jordy's Favorite audible?" 
+    answer1 = "Project Hail Mary"
+    answer2 = "Ready Player One"
+    answer3 = "The Name of the Wind"
+    answer4 = "The Way of Kings"
+    correct_answer = 1
+
+    [questions.question7]
+    question = "What is Jordy's Favorite Color?" 
+    answer1 = "Blue"
+    answer2 = "Black"
+    answer3 = "White"
+    answer4 = "Gold"
+    correct_answer = 2
+
+    [questions.question8] **
+    question = "According to speculations formed by Julius, EE Teams first co-op, what criminal organization is Jordy a part of?" 
+    answer1 = "Solomon Organization"
+    answer2 = "Crips"
+    answer3 = "MS-13"
+    answer4 = "ISIS"
+    correct_answer = 4
+
+    [questions.question9]
+    question = "You ask Jordy how hes doing, what does he say?" 
+    answer1 = "Good How are you?"
+    answer2 = "eh, you know how it is."
+    answer3 = "Pretty Alright."
+    answer4 = "Same old, you know."
+    correct_answer = 3
+
+    [questions.question10]
+    question = "As a surprise, you hand Jordy a beer, what does he say?" 
+    answer1 = "Sheeeeesh! Thank you!"
+    answer2 = "Oho, thank you sir!"
+    answer3 = "Oh shit, Thanks!!"
+    answer4 = "Oh, no thank you."
+    correct_answer = 2
+
+    [questions.question11]
+    question = "Who is Jordy's favorite Greek God?" 
+    answer1 = "Dionysus"
+    answer2 = "Hephaestus"
+    answer3 = "Hermes"
+    answer4 = "Hades"
+    correct_answer = 1
+
+    [questions.question12]
+    question = "What are Jordy's thoughts on Aliens?"
+    answer1 = "No aliens, no way."
+    answer2 = "We have to be the first. I think we would have heard or seen something by now if theres others, or they would have seen us."
+    answer3 = "Maybe at some point, maybe not. I really don't know if they are out there, but I certainly hope not."
+    answer4 = "They are out there, theres gotta be something. The universe is far to vast to have nothing."
+    correct_answer = 4
+
+    [questions.question13]
+    question = "What is a movie that Jordy would be down to watch at any time?" 
+    answer1 = "Forrest Gump"
+    answer2 = "Pirates of the Caribbean"
+    answer3 = "Dances with Wolves"
+    answer4 = "The Lord of the Rings: The Return of the King"
+    correct_answer = 2
+
+    [questions.question14]
+    question = "What type of Music does Jordy like the least?" 
+    answer1 = "Country"
+    answer2 = "Lo-fi"
+    answer3 = "Trap"
+    answer4 = "Dubstep"
+    correct_answer = 3
+
+    [questions.question15]
+    question = "What was Jordy known for when he was an infant?" 
+    answer1 = "Wanting Solitute"
+    answer2 = "Crying all the time"
+    answer3 = "Being aggressive"
+    answer4 = "Nothing, he was an infant."
+    correct_answer = 1
+
+    [questions.question16]
+    question = "What was Jordy most likley doing on January 1st, 2024 at 12:03 am?" 
+    answer1 = "Sleeping"
+    answer2 = "Eating Grapes"
+    answer3 = "Partying"
+    answer4 = "Drinking"
+    correct_answer = 2
+
+    [questions.question17]
+    question = "What type of phobia does Jordy have? "
+    answer1 = "Acrophobia"
+    answer2 = "Samhainophobia"
+    answer3 = "Agoraphobia"
+    answer4 = "Melissophobia"
+    correct_answer = 4
+
+    [questions.question18]
+    question = "Best Pizza place in existance in Jordy's opinion?" 
+    answer1 = "Santarpio's"
+    answer2 = "Hotbox"
+    answer3 = "Prince Palace"
+    answer4 = "Otto"
+    correct_answer = 3
+
+    [questions.question19]
+    question = "You and Jordy sit in a time machine and you tell him to set a time period to go visit. What does he pick?" 
+    answer1 = "Mesozoic"
+    answer2 = "Classical Antiquity"
+    answer3 = "Early Modern Period"
+    answer4 = "High Middle Ages"
+    correct_answer = 2
+
+    [questions.question20]
+    question = "What is Jordy's Smash Bros main?" 
+    answer1 = "Robin"
+    answer2 = "Ganondorf"
+    answer3 = "Ike"
+    answer4 = "Joker"
+    correct_answer = 2
+
+    [questions.question21]
+    question = "What is Jordy's Favorite Legend of Zelda Game?" 
+    answer1 = "Ocarina of Time"
+    answer2 = "Twilight Princess"
+    answer3 = "Majoras Mask"
+    answer4 = "Breath of the Wild"
+    correct_answer = 3
+
+    [questions.question22]
+    question = "What was Jordy doing on September 8th, 2022?" 
+    answer1 = "Working."
+    answer2 = "👀"
+    answer3 = "Drinking Tea."
+    answer4 = "Playing video games."
+    correct_answer = 1
+
+    [questions.question23]
+    question = "What was Jordy's Favorite board game?" 
+    answer1 = "Wingspan"
+    answer2 = "Dominion"
+    answer3 = "Disney Villanous"
+    answer4 = "Dominos"
+    correct_answer = 2
+
+    [questions.question24]
+    question = "Jordy throws a snowball with an initail velocity of 15 m/s at angle 10 degrees to the horizonal. How long will the stone stay in the air, assuming it strikes the ground at the same height it was launched?" 
+    answer1 = "2.15 seconds"
+    answer2 = "0.53 seconds"
+    answer3 = "1.43 seconds"
+    answer4 = "0.23 seconds"
+    correct_answer = 2
+
+    [questions.question25]
+    question = "What was Jordy's prefered meal in elemetry school?" 
+    answer1 = "Peanut butter and Jelly"
+    answer2 = "Chicken Nuggets"
+    answer3 = "Hot Pocket"
+    answer4 = "Peanut butter and Fluff"
+    correct_answer = 4
