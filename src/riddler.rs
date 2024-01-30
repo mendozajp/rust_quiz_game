@@ -4,6 +4,7 @@ use rand::{thread_rng, Rng};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::io::Write;
+use std::path;
 use std::{fs, fs::File, path::Path};
 use toml;
 
@@ -11,7 +12,7 @@ use toml;
 mod tools;
 
 /// Load a toml quiz file into memory
-pub fn load_single_exam_save_file(path: String) -> SavedQuiz {
+pub fn load_single_exam_save_file(path: &Path) -> SavedQuiz {
     // TODO: Convert to file path
     let toml_str = fs::read_to_string(path).expect("Failed to read toml file");
     let saved_quiz: SavedQuiz = toml::from_str(&toml_str).expect("Failed to deserialize toml file");
@@ -40,7 +41,7 @@ pub fn create_and_save_single_exam_save_file(
     Ok(file_name)
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct SavedQuiz {
     ordered_quiz: Quiz,
     answered_questions: Vec<(String, bool)>, // question name and if answered correctly.
@@ -112,7 +113,7 @@ impl Quiz {
                     continue;
                 }
                 None => {
-                    save_and_quit_prompt = false;
+                    save_and_quit_prompt = true;
                     break;
                 }
             }
@@ -132,7 +133,7 @@ impl Quiz {
         Some(score)
     }
     pub fn show_result(score: i32, total_questions: i32) {
-        tools::clear_terminal();
+        //     tools::clear_terminal();
         let grade_number = score * 100 / total_questions;
         fn _print_random_grade_message(grade: char) {
             let a = vec![
@@ -278,7 +279,7 @@ pub struct Question {
 
 impl Question {
     fn ask_question(&self) -> Option<bool> {
-        tools::clear_terminal();
+        //     tools::clear_terminal();
         println!("{}", self.question);
 
         // shuffle order of answers to be displayed with an answer key to reference later when
@@ -302,10 +303,12 @@ impl Question {
             println!("[{}] {}", answer.0 + 1, answer.1);
         }
         println!("Enter the number next to the answer you beleive is correct.");
+        println!("Type 'save and quit' if you would like to do so.");
         loop {
             let user_input = tools::read_input();
 
             if user_input == "save and quit" {
+                println!("Beginning save and quit functionality...");
                 return None; // begin generating save file.
             }
             let user_answer: usize = match user_input.parse() {

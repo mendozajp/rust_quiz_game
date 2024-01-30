@@ -1,3 +1,5 @@
+use std::path::Path;
+
 use rust_quiz_game::riddler::{self, load_single_exam_save_file, SavedQuiz};
 
 #[path = "tools.rs"]
@@ -35,16 +37,17 @@ fn handle_user_action() -> GameState {
 
 // main loop for switching between game states
 pub fn main_loop(arg_file: Option<String>) {
-    tools::clear_terminal();
+    //     tools::clear_terminal();
     let mut game_state: GameState = match arg_file {
-        Some(file_path) => {
+        Some(arg_file) => {
+            let file_path: &Path = Path::new(&arg_file);
             let loaded_quiz: SavedQuiz = load_single_exam_save_file(file_path);
             single_examination(Some(loaded_quiz))
         }
         None => start_up_screen(),
     };
     loop {
-        tools::clear_terminal();
+        //     tools::clear_terminal();
 
         game_state = match game_state {
             GameState::StartUpScreen => start_up_screen(),
@@ -70,6 +73,8 @@ fn single_examination(saved_quiz: Option<SavedQuiz>) -> GameState {
         None => {}
         Some(_) => {
             println!("We have a saved quiz!!");
+            let quiz = saved_quiz.unwrap();
+            println!("{:?}", quiz);
             return handle_user_action();
         }
     }
