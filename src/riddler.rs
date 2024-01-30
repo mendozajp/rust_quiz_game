@@ -1,4 +1,5 @@
 use chrono::Local;
+use rand::prelude::SliceRandom;
 use rand::{thread_rng, Rng};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -21,7 +22,7 @@ pub fn load_single_exam_save_file(path: String) -> SavedQuiz {
 pub fn create_and_save_single_exam_save_file(
     quiz_to_save: Quiz,
     answered_questions: Vec<(String, bool)>,
-) -> std::io::Result<()> {
+) -> std::io::Result<String> {
     let saved_quiz = SavedQuiz {
         ordered_quiz: quiz_to_save,
         answered_questions: answered_questions,
@@ -33,12 +34,10 @@ pub fn create_and_save_single_exam_save_file(
         Local::now().format("%d-%m-%Y_%H:%M")
     );
 
-    let mut file = File::create(file_name)?;
-    file.write(saved_file.as_bytes())?;
-    Ok(())
-
-    // write to file
-    // exit - maybe throw in a handle user action but with a param forcing a specific game state?
+    let mut file = File::create(file_name.clone())?;
+    file.write(saved_file.as_bytes())?; // TODO: This will be a problem when you load since the load function is not expecting it.
+                                        // also expecting this to fail right now since if you remove the ? the error is not what youd expect.
+    Ok(file_name)
 }
 
 #[derive(Serialize, Deserialize)]
@@ -100,9 +99,10 @@ impl Quiz {
     pub fn take_quiz(quiz: Quiz) -> Option<i32> {
         let mut score: i32 = 0;
         let mut answered_questions_record: Vec<(String, bool)> = Vec::new();
+        let mut save_and_quit_prompt = false;
 
         // Cycle through questions
-        for question in quiz.questions {
+        for question in &quiz.questions {
             match question.1.ask_question() {
                 Some(true) => {
                     score += 1;
@@ -113,10 +113,22 @@ impl Quiz {
                     continue;
                 }
                 None => {
-                    // we have to do it here, we have no choice, after saving the file, quit game.
-                    return None;
+                    save_and_quit_prompt = false;
+                    break;
                 }
             }
+        }
+        if save_and_quit_prompt {
+            match create_and_save_single_exam_save_file(quiz.clone(), answered_questions_record) {
+                Ok(file_name) => {
+                    println!("Progess saved at {file_name}.");
+                    return None;
+                }
+                Err(_) => {
+                    println!("Something went wrong, save file cannot be generated.");
+                    return None; // TODO: Loss of save file is pretty bad, find a way to cycle back into loop.
+                }
+            };
         }
         Some(score)
     }
@@ -264,27 +276,38 @@ pub struct Question {
 }
 
 impl Question {
-    fn ask_question(self) -> Option<bool> {
+    fn ask_question(&self) -> Option<bool> {
         // this should be referenced, but moves the question here. i think. though its in a loop so it being in a different scope pretty much does that already.
         println!("{}", self.question);
-        let mut answers = HashMap::new();
-        answers.insert(1, self.answer1);
-        answers.insert(2, self.answer2);
-        answers.insert(3, self.answer3);
-        answers.insert(4, self.answer4);
+
+        // shuffle order of answers to be displayed with an answer key to reference later when
+        // checking correct answer
+        let mut rng = rand::thread_rng();
+        let mut shuffle_answer_key: Vec<i8> = (1..=4).collect();
+        shuffle_answer_key.shuffle(&mut rng);
+
+        let mut answers = Vec::new();
+        for key in &shuffle_answer_key {
+            match key {
+                1 => answers.push(self.answer1.clone()),
+                2 => answers.push(self.answer2.clone()),
+                3 => answers.push(self.answer3.clone()),
+                4 => answers.push(self.answer4.clone()),
+                _ => unreachable!(),
+            }
+        }
 
         for answer in answers.iter().enumerate() {
-            println!("[{}] {}", answer.1 .0, answer.1 .1);
+            println!("[{}] {}", answer.0, answer.1);
         }
         println!("Enter the number next to the answer you beleive is correct.");
         loop {
-            // TODO: watch for save and quit prompt
             let user_input = tools::read_input();
 
             if user_input == "save and quit" {
-                return None;
+                return None; // begin generating save file.
             }
-            let user_answer: i8 = match user_input.parse() {
+            let user_answer: usize = match user_input.parse() {
                 Ok(num) => num,
                 Err(_) => {
                     println!(
@@ -298,7 +321,7 @@ impl Question {
                 continue;
             }
             println!();
-            if user_answer == self.correct_answer {
+            if shuffle_answer_key[user_answer] == self.correct_answer {
                 return Some(true);
             } else {
                 return Some(false);

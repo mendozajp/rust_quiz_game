@@ -56,7 +56,7 @@ quiz_name = "How well do you know Jordy?"
     answer4 = "Gold"
     correct_answer = 2
 
-    [questions.question8] **
+    [questions.question8]
     question = "According to speculations formed by Julius, EE Teams first co-op, what criminal organization is Jordy a part of?" 
     answer1 = "Solomon Organization"
     answer2 = "Crips"
