@@ -12,12 +12,12 @@ mod tools;
 /// Load a toml quiz file into memory
 pub fn load_single_exam_save_file(path: &Path) -> SavedQuiz {
     let toml_str = fs::read_to_string(path).expect("Failed to read toml file");
-    let quiz: SavedQuiz = toml::from_str(&toml_str).expect("Failed to deserialize toml file");
+    let saved_quiz: SavedQuiz = toml::from_str(&toml_str).expect("Failed to deserialize toml file");
 
-    return quiz;
+    return saved_quiz;
 }
 
-pub fn create_single_exam_save_file(
+pub fn create_and_save_single_exam_save_file(
     quiz_to_save: Quiz,
     answered_questions: Vec<bool>,
 ) -> std::io::Result<()> {
@@ -25,7 +25,7 @@ pub fn create_single_exam_save_file(
         ordered_quiz: quiz_to_save,
         answered_questions: answered_questions,
     };
-    let saved_file: String = toml::to_string(&saved_quiz).expect("Failed to serialize toml file");
+    let saved_file: String = toml::to_string(&saved_quiz).expect("Failed to serialize toml file"); // we throw every result up, can we do the same with this? --- This will shape other uses of .expect depending on what we find. maybe look at some of H. example code?
     println!("DEBUG: {saved_file}");
     let file_name = format!(
         "{}_single_exam_save_file.toml",
@@ -98,11 +98,30 @@ pub struct Quiz {
 impl Quiz {
     pub fn take_quiz(self) -> i32 {
         let mut score: i32 = 0;
+        let answered_questions_record = Vec::new();
 
         // Cycle through questions
         for question in self.questions {
-            if question.1.ask_question() {
-                score += 1;
+            match question.1.ask_question() {
+                Some(true) => {
+                    score += 1;
+                }
+                Some(false) => continue,
+                None => {
+                    match create_and_save_single_exam_save_file(
+                        self.clone(),
+                        answered_questions_record,
+                    ) {
+                        Err(_) => {
+                            println!("Something went wrong with saving state. Abandoning.");
+                            return -2;
+                        }
+                        Ok(_) => {
+                            println!("Save State created. Quiting game...");
+                            return -1;
+                        }
+                    }
+                }
             }
         }
         score
@@ -251,7 +270,7 @@ pub struct Question {
 }
 
 impl Question {
-    fn ask_question(self) -> bool {
+    fn ask_question(self) -> Option<bool> {
         // this should be referenced, but moves the question here. i think. though its in a loop so it being in a different scope pretty much does that already.
         println!("{}", self.question);
         let mut answers = HashMap::new();
@@ -267,7 +286,11 @@ impl Question {
         loop {
             // TODO: watch for save and quit prompt
             let user_input = tools::read_input();
-            let user_answer: i8 = match user_input.trim().parse() {
+
+            if user_input == "save and quit" {
+                return None;
+            }
+            let user_answer: i8 = match user_input.parse() {
                 Ok(num) => num,
                 Err(_) => {
                     println!(
@@ -282,9 +305,9 @@ impl Question {
             }
             println!();
             if user_answer == self.correct_answer {
-                return true;
+                return Some(true);
             } else {
-                return false;
+                return Some(false);
             }
         }
     }

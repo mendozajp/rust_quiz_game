@@ -1,5 +1,5 @@
 mod gamemaker;
 
 fn main() {
-    gamemaker::main_loop();
+    gamemaker::main_loop(None);
 }

@@ -1,4 +1,6 @@
-use rust_quiz_game::riddler;
+use std::path::Path;
+
+use rust_quiz_game::riddler::{self, SavedQuiz};
 
 #[path = "tools.rs"]
 mod tools;
@@ -8,7 +10,6 @@ enum GameState {
     StartUpScreen,
     SingleExamination,
     GameShow,
-    SaveAndQuit, // watch for save and quit on other states.
     QuitGame,
 }
 
@@ -29,28 +30,29 @@ fn handle_user_action() -> GameState {
             "start up screen" => return GameState::StartUpScreen,
             "single examination" => return GameState::SingleExamination,
             "game show" => return GameState::GameShow,
-            "save and quit" => return GameState::SaveAndQuit,
             _ => println!("not a valid action, please enter one of the game modes as displayed."),
         }
     }
 }
 
 // main loop for switching between game states
-pub fn main_loop() {
-    let mut game_state: GameState = GameState::StartUpScreen;
+pub fn main_loop(arg_file: Option<String>) {
+    let game_state: GameState = match arg_file {
+        Some(String) => single_examination(Some(saved_quiz)),
+        None => start_up_screen(),
+    };
     // add load save here if available
     loop {
         // should have a shell reset here to keep things clean
         for _ in 0..3 {
             println!(); // TODO: replace with bash reset
         }
-        match game_state {
-            GameState::StartUpScreen => game_state = start_up_screen(),
-            GameState::SingleExamination => game_state = single_examination(),
-            GameState::GameShow => game_state = game_show(),
-            GameState::SaveAndQuit => game_state = save_and_quit(),
+        let game_state: GameState = match game_state {
+            GameState::StartUpScreen => start_up_screen(),
+            GameState::SingleExamination => single_examination(None),
+            GameState::GameShow => game_show(),
             GameState::QuitGame => break,
-        }
+        };
     }
     println!("Thank you for playing!");
 }
@@ -64,7 +66,7 @@ fn start_up_screen() -> GameState {
 
 /// Game state - Single Examination
 /// Guides user through quiz, prompts for every question and returns result upon completion.
-fn single_examination() -> GameState {
+fn single_examination(saved_quiz: Option<SavedQuiz>) -> GameState {
     let quizes = riddler::Quizes::setup_single_examination();
     let mut quiz: Option<riddler::Quiz>;
 
@@ -73,8 +75,12 @@ fn single_examination() -> GameState {
 
     loop {
         let quizes = riddler::Quizes::setup_single_examination();
-        println!("Please enter one of the above displayed quizes to start");
+        println!("Please enter one of the above displayed quizes to start, or return by entering 'start up screen'");
         let user_input = tools::read_input();
+
+        if user_input == "start up screen" {
+            return GameState::StartUpScreen;
+        }
 
         quiz = quizes.ready_quiz(user_input);
         if quiz.is_none() {
@@ -91,11 +97,6 @@ fn single_examination() -> GameState {
 }
 
 fn game_show() -> GameState {
-    println!("Appologies, this game mode has not been implemented yet.");
-    return handle_user_action();
-}
-
-fn save_and_quit() -> GameState {
     println!("Appologies, this game mode has not been implemented yet.");
     return handle_user_action();
 }
