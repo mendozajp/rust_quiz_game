@@ -1,6 +1,6 @@
 mod gamemaker;
 
-use std::{env, io};
+use std::env;
 fn main() {
     let args: Vec<String> = env::args().collect();
 
@@ -11,8 +11,6 @@ fn main() {
             println!("{e}");
         }
     }
-
-    dbg!(&args[1]);
 }
 
 fn read_args(args: &[String]) -> Result<Option<String>, String> {

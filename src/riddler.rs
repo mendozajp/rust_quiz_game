@@ -4,7 +4,6 @@ use rand::{thread_rng, Rng};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::io::Write;
-use std::path;
 use std::{fs, fs::File, path::Path};
 use toml;
 
@@ -29,7 +28,7 @@ pub fn create_and_save_single_exam_save_file(
         answered_questions: answered_questions,
     };
     let saved_file: String = toml::to_string(&saved_quiz).expect("Failed to serialize toml file"); // we throw every result up, can we do the same with this? --- This will shape other uses of .expect depending on what we find. maybe look at some of H. example code?
-    println!("DEBUG: {saved_file}");
+                                                                                                   // println!("DEBUG: {saved_file}");
     let file_name = format!(
         "{}_single_exam_save_file.toml",
         Local::now().format("%d-%m-%Y_%H:%M")
@@ -45,6 +44,20 @@ pub fn create_and_save_single_exam_save_file(
 pub struct SavedQuiz {
     ordered_quiz: Quiz,
     answered_questions: Vec<(String, bool)>, // question name and if answered correctly.
+}
+impl SavedQuiz {
+    fn check_answered_question(
+        question_number: &String,
+        arr_of_answered_questions: &Vec<(String, bool)>,
+    ) -> Option<bool> {
+        for answered_question in arr_of_answered_questions {
+            if question_number == &answered_question.0 {
+                // feel like that double reference is gonna fail
+                return Some(answered_question.1);
+            }
+        }
+        return None;
+    }
 }
 
 #[derive(Clone)]
@@ -96,13 +109,34 @@ pub struct Quiz {
 }
 
 impl Quiz {
-    pub fn take_quiz(quiz: Quiz) -> Option<i32> {
+    pub fn take_quiz(quiz: Quiz, saved_quiz: Option<SavedQuiz>) -> Option<i32> {
         let mut score: i32 = 0;
         let mut answered_questions_record: Vec<(String, bool)> = Vec::new();
         let mut save_and_quit_prompt = false;
+        let mut loaded_saved_quiz: bool = false;
+        let mut loaded_exam: Quiz = quiz;
+
+        match saved_quiz {
+            None => (),
+            Some(saved_quiz) => {
+                loaded_saved_quiz = true;
+                answered_questions_record = saved_quiz.answered_questions.clone();
+                loaded_exam = saved_quiz.ordered_quiz;
+            }
+        }
 
         // Cycle through questions
-        for question in &quiz.questions {
+        for question in &loaded_exam.questions {
+            if loaded_saved_quiz {
+                match SavedQuiz::check_answered_question(question.0, &answered_questions_record) {
+                    None => (),
+                    Some(is_answer_correct) => {
+                        if is_answer_correct {
+                            score += 1;
+                        }
+                    }
+                }
+            }
             match question.1.ask_question() {
                 Some(true) => {
                     score += 1;
@@ -119,21 +153,24 @@ impl Quiz {
             }
         }
         if save_and_quit_prompt {
-            match create_and_save_single_exam_save_file(quiz.clone(), answered_questions_record) {
+            match create_and_save_single_exam_save_file(loaded_exam, answered_questions_record) {
                 Ok(file_name) => {
                     println!("Progess saved at {file_name}.");
                     return None;
                 }
                 Err(_) => {
                     println!("Something went wrong, save file cannot be generated.");
-                    return None; // TODO: Loss of save file is pretty bad, find a way to cycle back into loop.
+                    return None; // TODO: Loss of save file is pretty bad, find a way to cycle back into game or prompt user for choice.
                 }
             };
         }
         Some(score)
     }
+    pub fn get_quiz_length(&self) -> i32 {
+        return self.questions.len().clone() as i32;
+    }
     pub fn show_result(score: i32, total_questions: i32) {
-        //     tools::clear_terminal();
+        tools::clear_terminal();
         let grade_number = score * 100 / total_questions;
         fn _print_random_grade_message(grade: char) {
             let a = vec![
@@ -279,7 +316,7 @@ pub struct Question {
 
 impl Question {
     fn ask_question(&self) -> Option<bool> {
-        //     tools::clear_terminal();
+        tools::clear_terminal();
         println!("{}", self.question);
 
         // shuffle order of answers to be displayed with an answer key to reference later when

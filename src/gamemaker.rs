@@ -37,7 +37,7 @@ fn handle_user_action() -> GameState {
 
 // main loop for switching between game states
 pub fn main_loop(arg_file: Option<String>) {
-    //     tools::clear_terminal();
+    tools::clear_terminal();
     let mut game_state: GameState = match arg_file {
         Some(arg_file) => {
             let file_path: &Path = Path::new(&arg_file);
@@ -47,7 +47,7 @@ pub fn main_loop(arg_file: Option<String>) {
         None => start_up_screen(),
     };
     loop {
-        //     tools::clear_terminal();
+        tools::clear_terminal();
 
         game_state = match game_state {
             GameState::StartUpScreen => start_up_screen(),
@@ -72,7 +72,7 @@ fn single_examination(saved_quiz: Option<SavedQuiz>) -> GameState {
     match saved_quiz {
         None => {}
         Some(_) => {
-            println!("We have a saved quiz!!");
+            println!("Loading saved quiz file, quiz will begin immeditaly.");
             let quiz = saved_quiz.unwrap();
             println!("{:?}", quiz);
             return handle_user_action();
@@ -102,8 +102,11 @@ fn single_examination(saved_quiz: Option<SavedQuiz>) -> GameState {
     }
 
     let quiz = quiz.unwrap();
-    if let Some(score) = riddler::Quiz::take_quiz(quiz.clone()) {
-        riddler::Quiz::show_result(score, quiz.questions.len() as i32);
+    // get this before you tear apart the loaded quiz
+    let total_quiz_question = quiz.get_quiz_length();
+
+    if let Some(score) = riddler::Quiz::take_quiz(quiz, None) {
+        riddler::Quiz::show_result(score, total_quiz_question);
     } else {
         return GameState::QuitGame;
     }
