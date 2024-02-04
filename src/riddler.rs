@@ -40,10 +40,10 @@ pub fn create_and_save_single_exam_save_file(
     Ok(file_name)
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct SavedQuiz {
-    ordered_quiz: Quiz,
-    answered_questions: Vec<(String, bool)>, // question name and if answered correctly.
+    pub ordered_quiz: Quiz,
+    pub answered_questions: Vec<(String, bool)>, // question name and if answered correctly.
 }
 impl SavedQuiz {
     fn check_answered_question(
@@ -109,31 +109,44 @@ pub struct Quiz {
 }
 
 impl Quiz {
-    pub fn take_quiz(quiz: Quiz, saved_quiz: Option<SavedQuiz>) -> Option<i32> {
+    pub fn take_quiz(
+        quiz: Quiz,
+        answered_questions_record: Option<Vec<(String, bool)>>,
+    ) -> Option<i32> {
         let mut score: i32 = 0;
-        let mut answered_questions_record: Vec<(String, bool)> = Vec::new();
-        let mut save_and_quit_prompt = false;
         let mut loaded_saved_quiz: bool = false;
-        let mut loaded_exam: Quiz = quiz;
-
-        match saved_quiz {
-            None => (),
-            Some(saved_quiz) => {
+        let mut answered_questions_record: Vec<(String, bool)> = match answered_questions_record {
+            None => Vec::new(),
+            Some(answered_questions) => {
                 loaded_saved_quiz = true;
-                answered_questions_record = saved_quiz.answered_questions.clone();
-                loaded_exam = saved_quiz.ordered_quiz;
+                answered_questions
             }
-        }
+        };
+        let mut save_and_quit_prompt = false;
+        // let mut loaded_exam: Quiz = quiz;
+
+        // match saved_quiz {
+        //     None => (),
+        //     Some(saved_quiz) => {
+        //         loaded_saved_quiz = true;
+        //         answered_questions_record = saved_quiz.answered_questions.clone();
+        //         loaded_exam = saved_quiz.ordered_quiz;
+        //     }
+        // }
 
         // Cycle through questions
-        for question in &loaded_exam.questions {
+        for question in &quiz.questions {
             if loaded_saved_quiz {
+                // obviously very ineffiecent, as if you loaded, this is growing throughout the test
+                // ideally you would strip those and have the relevent information seperate?
+                // TODO: quiz metadata
                 match SavedQuiz::check_answered_question(question.0, &answered_questions_record) {
                     None => (),
                     Some(is_answer_correct) => {
                         if is_answer_correct {
                             score += 1;
                         }
+                        continue; // skip question since it was answered
                     }
                 }
             }
@@ -153,7 +166,7 @@ impl Quiz {
             }
         }
         if save_and_quit_prompt {
-            match create_and_save_single_exam_save_file(loaded_exam, answered_questions_record) {
+            match create_and_save_single_exam_save_file(quiz, answered_questions_record) {
                 Ok(file_name) => {
                     println!("Progess saved at {file_name}.");
                     return None;

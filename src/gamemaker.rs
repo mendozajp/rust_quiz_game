@@ -69,43 +69,63 @@ fn start_up_screen() -> GameState {
 /// Game state - Single Examination
 /// Guides user through quiz, prompts for every question and returns result upon completion.
 fn single_examination(saved_quiz: Option<SavedQuiz>) -> GameState {
-    match saved_quiz {
-        None => {}
+    let mut answered_questions_record: Option<Vec<(String, bool)>> = None;
+    // match saved_quiz {
+    //     None => {}
+    //     Some(_) => {
+    //         println!("Loading saved quiz file, quiz will begin immeditaly.");
+    //         let quiz = saved_quiz.unwrap();
+    //         println!("{:?}", quiz);
+    //         return handle_user_action();
+    //     }
+    // }
+
+    let quizes = riddler::Quizes::setup_single_examination(); // TODO: CONFIRM YOU NEED THIS
+    let quiz: Option<riddler::Quiz> = match saved_quiz {
+        None => None,
         Some(_) => {
             println!("Loading saved quiz file, quiz will begin immeditaly.");
-            let quiz = saved_quiz.unwrap();
-            println!("{:?}", quiz);
-            return handle_user_action();
+            let loaded_quiz: SavedQuiz = saved_quiz.unwrap();
+
+            answered_questions_record = Some(loaded_quiz.answered_questions.clone());
+            Some(loaded_quiz.ordered_quiz)
         }
-    }
-    let quizes = riddler::Quizes::setup_single_examination();
-    let mut quiz: Option<riddler::Quiz>;
+    };
 
-    println!("Quizes available for testing:");
-    quizes.display_quiz_names();
+    // let quizes = riddler::Quizes::setup_single_examination();
+    // let mut quiz: Option<riddler::Quiz>;
+    let quiz: riddler::Quiz = match quiz {
+        None => {
+            println!("Quizes available for testing:");
+            quizes.display_quiz_names();
+            let selected_quiz: riddler::Quiz;
 
-    loop {
-        let quizes = riddler::Quizes::setup_single_examination();
-        println!("Please enter one of the above displayed quizes to start, or return by entering 'start up screen'");
-        let user_input = tools::read_input();
+            loop {
+                let quizes = riddler::Quizes::setup_single_examination();
+                println!("Please enter one of the above displayed quizes to start, or return by entering 'start up screen'");
+                let user_input = tools::read_input();
 
-        if user_input == "start up screen" {
-            return GameState::StartUpScreen;
+                if user_input == "start up screen" {
+                    return GameState::StartUpScreen;
+                }
+
+                let user_selected_quiz = quizes.ready_quiz(user_input);
+                if user_selected_quiz.is_none() {
+                    println!("Quiz not available, confirm spelling.");
+                    continue;
+                }
+                selected_quiz = user_selected_quiz.unwrap();
+                break;
+            }
+            selected_quiz
         }
+        Some(quiz) => quiz,
+    };
 
-        quiz = quizes.ready_quiz(user_input);
-        if quiz.is_none() {
-            println!("Quiz not available, confirm spelling.");
-            continue;
-        }
-        break;
-    }
-
-    let quiz = quiz.unwrap();
     // get this before you tear apart the loaded quiz
     let total_quiz_question = quiz.get_quiz_length();
 
-    if let Some(score) = riddler::Quiz::take_quiz(quiz, None) {
+    if let Some(score) = riddler::Quiz::take_quiz(quiz, answered_questions_record) {
         riddler::Quiz::show_result(score, total_quiz_question);
     } else {
         return GameState::QuitGame;
