@@ -17,12 +17,12 @@ quiz_name = "How well do you know Jordy?"
     correct_answer = 2
     
     [questions.question3]
-    question = "Who is Jordy's Favorite super hero?" 
-    answer1 = "Flash"
-    answer2 = "Professor X"
-    answer3 = "Doctor Strange"
-    answer4 = "Deadpool"
-    correct_answer = 3
+    question = "Which of the following would Jordy prefer to be locked in deadly combat with?" 
+    answer1 = "7 Ducks"
+    answer2 = "4 Raccoons"
+    answer3 = "3 Capybara"
+    answer4 = "2 Flamingos"
+    correct_answer = 1
 
     [questions.question4]
     question = "What is Jordy's Favorite anime?" 
@@ -49,12 +49,12 @@ quiz_name = "How well do you know Jordy?"
     correct_answer = 1
 
     [questions.question7]
-    question = "What is Jordy's Favorite Color?" 
-    answer1 = "Blue"
-    answer2 = "Black"
-    answer3 = "White"
-    answer4 = "Gold"
-    correct_answer = 2
+    question = "In what situation would Jordy rather find himself in?" 
+    answer1 = "Alien Invasion"
+    answer2 = "Zombie Virus Outbreak"
+    answer3 = "The Purge"
+    answer4 = "Nuclear Winter"
+    correct_answer = 4
 
     [questions.question8]
     question = "According to speculations formed by Julius, EE Teams first co-op, what criminal organization is Jordy a part of?" 
@@ -86,7 +86,7 @@ quiz_name = "How well do you know Jordy?"
     answer2 = "Hephaestus"
     answer3 = "Hermes"
     answer4 = "Hades"
-    correct_answer = 1
+    correct_answer = 4
 
     [questions.question12]
     question = "What are Jordy's thoughts on Aliens?"
@@ -199,3 +199,27 @@ quiz_name = "How well do you know Jordy?"
     answer3 = "Hot Pocket"
     answer4 = "Peanut butter and Fluff"
     correct_answer = 4
+
+    [questions.question26]
+    question = "You have a dream of being drafted in the army in the middle ages. You and Jordy are in the barracks readying for battle. What weapon does Jordy hold?" 
+    answer1 = "Morning Star"
+    answer2 = "Halberd"
+    answer3 = "Long Sword"
+    answer4 = "Katana"
+    correct_answer = 4
+
+    [questions.question27]
+    question = "You and Jordy appear in a fantasy world, what 'class' is Jordy most likly to be/seek out?" 
+    answer1 = "Wizard"
+    answer2 = "Barbarian"
+    answer3 = "Rogue"
+    answer4 = "Bard"
+    correct_answer = 1
+
+    [questions.question28]
+    question = "What is Jordy's Preferred method for Human Extinction?" 
+    answer1 = "Nuclear War"
+    answer2 = "Extraterrestrial Invasion"
+    answer3 = "Cosmic Catastrophe"
+    answer4 = "Climate Change"
+    correct_answer = 3
