@@ -12,13 +12,13 @@ mod tools;
 
 /// Load a toml quiz file into memory
 pub fn load_single_exam_save_file(path: &Path) -> SavedQuiz {
-    // TODO: Convert to file path
     let toml_str = fs::read_to_string(path).expect("Failed to read toml file");
     let saved_quiz: SavedQuiz = toml::from_str(&toml_str).expect("Failed to deserialize toml file");
 
     return saved_quiz;
 }
 
+/// Creates and saves a saved file from the single examination game mode to project dir
 pub fn create_and_save_single_exam_save_file(
     quiz_to_save: Quiz,
     answered_questions: Vec<(String, bool)>,
@@ -27,32 +27,31 @@ pub fn create_and_save_single_exam_save_file(
         ordered_quiz: quiz_to_save,
         answered_questions: answered_questions,
     };
-    let saved_file: String = toml::to_string(&saved_quiz).expect("Failed to serialize toml file"); // we throw every result up, can we do the same with this? --- This will shape other uses of .expect depending on what we find. maybe look at some of H. example code?
-                                                                                                   // println!("DEBUG: {saved_file}");
+    let saved_file: String = toml::to_string(&saved_quiz).expect("Failed to serialize toml file");
     let file_name = format!(
         "{}_single_exam_save_file.toml",
         Local::now().format("%d-%m-%Y_%H:%M")
     );
 
     let mut file = File::create(file_name.clone())?;
-    file.write(saved_file.as_bytes())?; // TODO: This will be a problem when you load since the load function is not expecting it.
-                                        // also expecting this to fail right now since if you remove the ? the error is not what youd expect.
+    file.write(saved_file.as_bytes())?;
     Ok(file_name)
 }
 
+/// Struct mainly for saving and loading files for single examination.
 #[derive(Serialize, Deserialize, Clone)]
 pub struct SavedQuiz {
     pub ordered_quiz: Quiz,
     pub answered_questions: Vec<(String, bool)>, // question name and if answered correctly.
 }
 impl SavedQuiz {
+    /// handles skipping questions already answered from saved file.
     fn check_answered_question(
         question_number: &String,
         arr_of_answered_questions: &Vec<(String, bool)>,
     ) -> Option<bool> {
         for answered_question in arr_of_answered_questions {
             if question_number == &answered_question.0 {
-                // feel like that double reference is gonna fail
                 return Some(answered_question.1);
             }
         }
@@ -60,6 +59,8 @@ impl SavedQuiz {
     }
 }
 
+/// Struct for collecting and presenting all available quizes to the user for single examination
+/// game mode.
 #[derive(Clone)]
 pub struct Quizes {
     pub available_quizes: Vec<Quiz>,
@@ -77,18 +78,21 @@ impl Quizes {
         cached_quizes
     }
 
+    /// Creates quizes structure populated with all available quizes for user.
     pub fn setup_single_examination() -> Quizes {
         Quizes {
             available_quizes: Quizes::load_stored_quizes(),
         }
     }
 
+    /// Display all quizes within quizes structure to user.
     pub fn display_quiz_names(&self) {
         for quiz in &self.available_quizes {
             println!("{}", quiz.quiz_name);
         }
     }
 
+    /// Return a single quiz structure to begin game or none on invaild input.
     pub fn ready_quiz(self, input_quiz_name: String) -> Option<Quiz> {
         let mut quiz: Option<Quiz> = None;
 
@@ -102,6 +106,7 @@ impl Quizes {
     }
 }
 
+/// Main Structure for single examination, holds collection of questions for user to answer.
 #[derive(Debug, Deserialize, Clone, Serialize)]
 pub struct Quiz {
     pub quiz_name: String,
@@ -109,6 +114,8 @@ pub struct Quiz {
 }
 
 impl Quiz {
+    /// Goes through a series of prompts for user to answer all questions of a given quiz. Skips
+    /// questions marked in answered_questions_record if loaded in via saved file.
     pub fn take_quiz(
         quiz: Quiz,
         answered_questions_record: Option<Vec<(String, bool)>>,
@@ -123,23 +130,14 @@ impl Quiz {
             }
         };
         let mut save_and_quit_prompt = false;
-        // let mut loaded_exam: Quiz = quiz;
-
-        // match saved_quiz {
-        //     None => (),
-        //     Some(saved_quiz) => {
-        //         loaded_saved_quiz = true;
-        //         answered_questions_record = saved_quiz.answered_questions.clone();
-        //         loaded_exam = saved_quiz.ordered_quiz;
-        //     }
-        // }
 
         // Cycle through questions
         for question in &quiz.questions {
             if loaded_saved_quiz {
-                // obviously very ineffiecent, as if you loaded, this is growing throughout the test
+                // TODO: obviously very ineffiecent, as if you loaded, this is growing throughout the test
                 // ideally you would strip those and have the relevent information seperate?
-                // TODO: quiz metadata
+                // Maybe we can solve with quiz metadata? Or clone og, strip down one for test taking and use
+                // the og for results?
                 match SavedQuiz::check_answered_question(question.0, &answered_questions_record) {
                     None => (),
                     Some(is_answer_correct) => {
@@ -160,6 +158,7 @@ impl Quiz {
                     continue;
                 }
                 None => {
+                    // only 'save and quit' input by user
                     save_and_quit_prompt = true;
                     break;
                 }
@@ -179,9 +178,13 @@ impl Quiz {
         }
         Some(score)
     }
+
+    /// return length of a quiz
     pub fn get_quiz_length(&self) -> i32 {
         return self.questions.len().clone() as i32;
     }
+
+    /// report the outcome of a quiz given a score and the total number of questions in said quiz.
     pub fn show_result(score: i32, total_questions: i32) {
         tools::clear_terminal();
         let grade_number = score * 100 / total_questions;
@@ -198,6 +201,7 @@ impl Quiz {
                 "Could've been better.",
                 "Alright, good job!",
                 "Close enough I suppose.",
+                "Nice work keeping above C level.",
             ];
             let c = vec![
                 "Acceptable.",
@@ -311,12 +315,10 @@ impl Quiz {
             }
             _ => unreachable!(),
         }
-        for _ in 0..3 {
-            println!();
-        }
     }
 }
 
+/// Struct for single question within a quiz. Standard multiple choice format.
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Question {
     pub question: String,
@@ -332,8 +334,8 @@ impl Question {
         tools::clear_terminal();
         println!("{}", self.question);
 
-        // shuffle order of answers to be displayed with an answer key to reference later when
-        // checking correct answer
+        // shuffle order of answers to be displayed with an answer key
+        // to reference later when checking correct answer
         let mut rng = rand::thread_rng();
         let mut shuffle_answer_key: Vec<i8> = (1..=4).collect();
         shuffle_answer_key.shuffle(&mut rng);

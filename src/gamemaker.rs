@@ -24,7 +24,6 @@ fn handle_user_action() -> GameState {
 
         let user_action = tools::read_input();
 
-        println!();
         match user_action.as_str() {
             "exit" => return GameState::QuitGame,
             "start up screen" => return GameState::StartUpScreen,
@@ -70,17 +69,7 @@ fn start_up_screen() -> GameState {
 /// Guides user through quiz, prompts for every question and returns result upon completion.
 fn single_examination(saved_quiz: Option<SavedQuiz>) -> GameState {
     let mut answered_questions_record: Option<Vec<(String, bool)>> = None;
-    // match saved_quiz {
-    //     None => {}
-    //     Some(_) => {
-    //         println!("Loading saved quiz file, quiz will begin immeditaly.");
-    //         let quiz = saved_quiz.unwrap();
-    //         println!("{:?}", quiz);
-    //         return handle_user_action();
-    //     }
-    // }
 
-    let quizes = riddler::Quizes::setup_single_examination(); // TODO: CONFIRM YOU NEED THIS
     let quiz: Option<riddler::Quiz> = match saved_quiz {
         None => None,
         Some(_) => {
@@ -92,10 +81,9 @@ fn single_examination(saved_quiz: Option<SavedQuiz>) -> GameState {
         }
     };
 
-    // let quizes = riddler::Quizes::setup_single_examination();
-    // let mut quiz: Option<riddler::Quiz>;
     let quiz: riddler::Quiz = match quiz {
         None => {
+            let quizes = riddler::Quizes::setup_single_examination();
             println!("Quizes available for testing:");
             quizes.display_quiz_names();
             let selected_quiz: riddler::Quiz;
@@ -122,7 +110,6 @@ fn single_examination(saved_quiz: Option<SavedQuiz>) -> GameState {
         Some(quiz) => quiz,
     };
 
-    // get this before you tear apart the loaded quiz
     let total_quiz_question = quiz.get_quiz_length();
 
     if let Some(score) = riddler::Quiz::take_quiz(quiz, answered_questions_record) {
