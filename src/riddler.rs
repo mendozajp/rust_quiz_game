@@ -39,9 +39,6 @@ pub struct Quizes {
 impl Quizes {
     /// Load all quiz toml files in quizes folder
     fn load_stored_quizes() -> Vec<Quiz> {
-        // *********************** SKIPPING UNIT TESTS ***********************
-        // *********************** REQUIRES CHANGE TO TEST CORRECTLY ***********************
-
         let mut cached_quizes: Vec<Quiz> = Vec::new();
         let paths = fs::read_dir("src/quizes/").unwrap();
 
@@ -53,7 +50,6 @@ impl Quizes {
 
     /// Creates quizes structure populated with all available quizes for user.
     pub fn setup_single_examination() -> Quizes {
-        // *********************** SKIPPING UNIT TESTS ***********************
         Quizes {
             available_quizes: Quizes::load_stored_quizes(),
         }
@@ -61,9 +57,6 @@ impl Quizes {
 
     /// Display all quizes within quizes structure to user.
     pub fn display_quiz_names(&self) {
-        // *********************** SKIPPING UNIT TESTS ***********************
-        // *********************** REQUIRES CHANGE TO TEST CORRECTLY ***********************
-
         for quiz in &self.available_quizes {
             println!("{}", quiz.quiz_name);
         }
@@ -71,7 +64,6 @@ impl Quizes {
 
     /// Return a single quiz structure to begin game or none on invaild input.
     pub fn ready_quiz(self, input_quiz_name: String) -> Option<Quiz> {
-        // *********************** UNIT TEST NEEDS REVIEW ***********************
         let mut quiz: Option<Quiz> = None;
 
         for single_quiz in self.available_quizes {
