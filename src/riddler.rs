@@ -1,4 +1,6 @@
+use crate::tools;
 use chrono::Local;
+use rand::prelude::SliceRandom;
 use rand::{thread_rng, Rng};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -6,46 +8,57 @@ use std::io::Write;
 use std::{fs, fs::File, path::Path};
 use toml;
 
-#[path = "tools.rs"]
-mod tools;
-
 /// Load a toml quiz file into memory
 pub fn load_single_exam_save_file(path: &Path) -> SavedQuiz {
     let toml_str = fs::read_to_string(path).expect("Failed to read toml file");
-    let quiz: SavedQuiz = toml::from_str(&toml_str).expect("Failed to deserialize toml file");
+    let saved_quiz: SavedQuiz = toml::from_str(&toml_str).expect("Failed to deserialize toml file");
 
-    return quiz;
+    return saved_quiz;
 }
 
-pub fn create_single_exam_save_file(
+/// Creates and saves a saved file from the single examination game mode to project dir
+pub fn create_and_save_single_exam_save_file(
     quiz_to_save: Quiz,
-    answered_questions: Vec<bool>,
-) -> std::io::Result<()> {
+    answered_questions: Vec<(String, bool)>,
+) -> std::io::Result<String> {
     let saved_quiz = SavedQuiz {
         ordered_quiz: quiz_to_save,
         answered_questions: answered_questions,
     };
     let saved_file: String = toml::to_string(&saved_quiz).expect("Failed to serialize toml file");
-    println!("DEBUG: {saved_file}");
     let file_name = format!(
         "{}_single_exam_save_file.toml",
         Local::now().format("%d-%m-%Y_%H:%M")
     );
 
-    let mut file = File::create(file_name)?;
+    let mut file = File::create(file_name.clone())?;
     file.write(saved_file.as_bytes())?;
-    Ok(())
-
-    // write to file
-    // exit - maybe throw in a handle user action but with a param forcing a specific game state?
+    Ok(file_name)
 }
 
-#[derive(Serialize, Deserialize)]
+/// Struct mainly for saving and loading files for single examination.
+#[derive(Serialize, Deserialize, Clone)]
 pub struct SavedQuiz {
-    ordered_quiz: Quiz,
-    answered_questions: Vec<bool>,
+    pub ordered_quiz: Quiz,
+    pub answered_questions: Vec<(String, bool)>, // question name and if answered correctly.
+}
+impl SavedQuiz {
+    /// handles skipping questions already answered from saved file.
+    fn check_answered_question(
+        question_number: &String,
+        arr_of_answered_questions: &Vec<(String, bool)>,
+    ) -> Option<bool> {
+        for answered_question in arr_of_answered_questions {
+            if question_number == &answered_question.0 {
+                return Some(answered_question.1);
+            }
+        }
+        return None;
+    }
 }
 
+/// Struct for collecting and presenting all available quizes to the user for single examination
+/// game mode.
 #[derive(Clone)]
 pub struct Quizes {
     pub available_quizes: Vec<Quiz>,
@@ -63,25 +76,27 @@ impl Quizes {
         cached_quizes
     }
 
+    /// Creates quizes structure populated with all available quizes for user.
     pub fn setup_single_examination() -> Quizes {
         Quizes {
             available_quizes: Quizes::load_stored_quizes(),
         }
     }
 
+    /// Display all quizes within quizes structure to user.
     pub fn display_quiz_names(&self) {
         for quiz in &self.available_quizes {
             println!("{}", quiz.quiz_name);
         }
     }
 
+    /// Return a single quiz structure to begin game or none on invaild input.
     pub fn ready_quiz(self, input_quiz_name: String) -> Option<Quiz> {
         let mut quiz: Option<Quiz> = None;
 
         for single_quiz in self.available_quizes {
             if input_quiz_name == single_quiz.quiz_name.trim().to_lowercase() {
                 quiz = Some(single_quiz.clone());
-                println!(); // spacing
             }
         }
 
@@ -89,6 +104,7 @@ impl Quizes {
     }
 }
 
+/// Main Structure for single examination, holds collection of questions for user to answer.
 #[derive(Debug, Deserialize, Clone, Serialize)]
 pub struct Quiz {
     pub quiz_name: String,
@@ -96,19 +112,79 @@ pub struct Quiz {
 }
 
 impl Quiz {
-    pub fn take_quiz(self) -> i32 {
+    /// Goes through a series of prompts for user to answer all questions of a given quiz. Skips
+    /// questions marked in answered_questions_record if loaded in via saved file.
+    pub fn take_quiz(
+        quiz: Quiz,
+        answered_questions_record: Option<Vec<(String, bool)>>,
+    ) -> Option<i32> {
         let mut score: i32 = 0;
+        let mut loaded_saved_quiz: bool = false;
+        let mut answered_questions_record: Vec<(String, bool)> = match answered_questions_record {
+            None => Vec::new(),
+            Some(answered_questions) => {
+                loaded_saved_quiz = true;
+                answered_questions
+            }
+        };
+        let mut save_and_quit_prompt = false;
 
         // Cycle through questions
-        for question in self.questions {
-            if question.1.ask_question() {
-                score += 1;
+        for question in &quiz.questions {
+            if loaded_saved_quiz {
+                // TODO: obviously very ineffiecent, as if you loaded, this is growing throughout the test
+                // ideally you would strip those and have the relevent information seperate?
+                // Maybe we can solve with quiz metadata? Or clone og, strip down one for test taking and use
+                // the og for results?
+                match SavedQuiz::check_answered_question(question.0, &answered_questions_record) {
+                    None => (),
+                    Some(is_answer_correct) => {
+                        if is_answer_correct {
+                            score += 1;
+                        }
+                        continue; // skip question since it was answered
+                    }
+                }
+            }
+            match question.1.ask_question() {
+                Some(true) => {
+                    score += 1;
+                    answered_questions_record.push((String::from(question.0), true));
+                }
+                Some(false) => {
+                    answered_questions_record.push((String::from(question.0), false));
+                    continue;
+                }
+                None => {
+                    // only 'save and quit' input by user
+                    save_and_quit_prompt = true;
+                    break;
+                }
             }
         }
-        score
+        if save_and_quit_prompt {
+            match create_and_save_single_exam_save_file(quiz, answered_questions_record) {
+                Ok(file_name) => {
+                    println!("Progess saved at {file_name}.");
+                    return None;
+                }
+                Err(_) => {
+                    println!("Something went wrong, save file cannot be generated.");
+                    return None; // TODO: Loss of save file is pretty bad, find a way to cycle back into game or prompt user for choice.
+                }
+            };
+        }
+        Some(score)
     }
+
+    /// return length of a quiz
+    pub fn get_quiz_length(&self) -> i32 {
+        return self.questions.len().clone() as i32;
+    }
+
+    /// report the outcome of a quiz given a score and the total number of questions in said quiz.
     pub fn show_result(score: i32, total_questions: i32) {
-        println!(); // spacing
+        tools::clear_terminal();
         let grade_number = score * 100 / total_questions;
         fn _print_random_grade_message(grade: char) {
             let a = vec![
@@ -123,6 +199,7 @@ impl Quiz {
                 "Could've been better.",
                 "Alright, good job!",
                 "Close enough I suppose.",
+                "Nice work keeping above C level.",
             ];
             let c = vec![
                 "Acceptable.",
@@ -236,10 +313,10 @@ impl Quiz {
             }
             _ => unreachable!(),
         }
-        println!() // spacing
     }
 }
 
+/// Struct for single question within a quiz. Standard multiple choice format.
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Question {
     pub question: String,
@@ -251,23 +328,40 @@ pub struct Question {
 }
 
 impl Question {
-    fn ask_question(self) -> bool {
-        // this should be referenced, but moves the question here. i think. though its in a loop so it being in a different scope pretty much does that already.
+    fn ask_question(&self) -> Option<bool> {
+        tools::clear_terminal();
         println!("{}", self.question);
-        let mut answers = HashMap::new();
-        answers.insert(1, self.answer1);
-        answers.insert(2, self.answer2);
-        answers.insert(3, self.answer3);
-        answers.insert(4, self.answer4);
+
+        // shuffle order of answers to be displayed with an answer key
+        // to reference later when checking correct answer
+        let mut rng = rand::thread_rng();
+        let mut shuffle_answer_key: Vec<i8> = (1..=4).collect();
+        shuffle_answer_key.shuffle(&mut rng);
+
+        let mut answers = Vec::new();
+        for key in &shuffle_answer_key {
+            match key {
+                1 => answers.push(self.answer1.clone()),
+                2 => answers.push(self.answer2.clone()),
+                3 => answers.push(self.answer3.clone()),
+                4 => answers.push(self.answer4.clone()),
+                _ => unreachable!(),
+            }
+        }
 
         for answer in answers.iter().enumerate() {
-            println!("[{}] {}", answer.1 .0, answer.1 .1);
+            println!("[{}] {}", answer.0 + 1, answer.1);
         }
         println!("Enter the number next to the answer you beleive is correct.");
+        println!("Type 'save and quit' if you would like to do so.");
         loop {
-            // TODO: watch for save and quit prompt
             let user_input = tools::read_input();
-            let user_answer: i8 = match user_input.trim().parse() {
+
+            if user_input == "save and quit" {
+                println!("Beginning save and quit functionality...");
+                return None; // begin generating save file.
+            }
+            let user_answer: usize = match user_input.parse() {
                 Ok(num) => num,
                 Err(_) => {
                     println!(
@@ -281,10 +375,10 @@ impl Question {
                 continue;
             }
             println!();
-            if user_answer == self.correct_answer {
-                return true;
+            if shuffle_answer_key[user_answer - 1] == self.correct_answer {
+                return Some(true);
             } else {
-                return false;
+                return Some(false);
             }
         }
     }

@@ -1,4 +1,6 @@
-use rust_quiz_game::riddler;
+use std::path::Path;
+
+use rust_quiz_game::riddler::{self, load_single_exam_save_file, SavedQuiz};
 
 #[path = "tools.rs"]
 mod tools;
@@ -8,7 +10,6 @@ enum GameState {
     StartUpScreen,
     SingleExamination,
     GameShow,
-    SaveAndQuit, // watch for save and quit on other states.
     QuitGame,
 }
 
@@ -29,28 +30,31 @@ fn handle_user_action() -> GameState {
             "start up screen" => return GameState::StartUpScreen,
             "single examination" => return GameState::SingleExamination,
             "game show" => return GameState::GameShow,
-            "save and quit" => return GameState::SaveAndQuit,
             _ => println!("not a valid action, please enter one of the game modes as displayed."),
         }
     }
 }
 
 // main loop for switching between game states
-pub fn main_loop() {
-    let mut game_state: GameState = GameState::StartUpScreen;
-    // add load save here if available
+pub fn main_loop(arg_file: Option<String>) {
+    tools::clear_terminal();
+    let mut game_state: GameState = match arg_file {
+        Some(arg_file) => {
+            let file_path: &Path = Path::new(&arg_file);
+            let loaded_quiz: SavedQuiz = load_single_exam_save_file(file_path);
+            single_examination(Some(loaded_quiz))
+        }
+        None => start_up_screen(),
+    };
     loop {
-        // should have a shell reset here to keep things clean
-        for _ in 0..3 {
-            println!(); // TODO: replace with bash reset
-        }
-        match game_state {
-            GameState::StartUpScreen => game_state = start_up_screen(),
-            GameState::SingleExamination => game_state = single_examination(),
-            GameState::GameShow => game_state = game_show(),
-            GameState::SaveAndQuit => game_state = save_and_quit(),
+        tools::clear_terminal();
+
+        game_state = match game_state {
+            GameState::StartUpScreen => start_up_screen(),
+            GameState::SingleExamination => single_examination(None),
+            GameState::GameShow => game_show(),
             GameState::QuitGame => break,
-        }
+        };
     }
     println!("Thank you for playing!");
 }
@@ -64,38 +68,61 @@ fn start_up_screen() -> GameState {
 
 /// Game state - Single Examination
 /// Guides user through quiz, prompts for every question and returns result upon completion.
-fn single_examination() -> GameState {
-    let quizes = riddler::Quizes::setup_single_examination();
-    let mut quiz: Option<riddler::Quiz>;
+fn single_examination(saved_quiz: Option<SavedQuiz>) -> GameState {
+    let mut answered_questions_record: Option<Vec<(String, bool)>> = None;
 
-    println!("Quizes available for testing:");
-    quizes.display_quiz_names();
+    let quiz: Option<riddler::Quiz> = match saved_quiz {
+        None => None,
+        Some(_) => {
+            println!("Loading saved quiz file, quiz will begin immeditaly.");
+            let loaded_quiz: SavedQuiz = saved_quiz.unwrap();
 
-    loop {
-        let quizes = riddler::Quizes::setup_single_examination();
-        println!("Please enter one of the above displayed quizes to start");
-        let user_input = tools::read_input();
-
-        quiz = quizes.ready_quiz(user_input);
-        if quiz.is_none() {
-            println!("Quiz not available, confirm spelling.");
-            continue;
+            answered_questions_record = Some(loaded_quiz.answered_questions.clone());
+            Some(loaded_quiz.ordered_quiz)
         }
-        break;
-    }
+    };
 
-    let quiz = quiz.unwrap();
-    riddler::Quiz::show_result(quiz.clone().take_quiz(), quiz.questions.len() as i32);
+    let quiz: riddler::Quiz = match quiz {
+        None => {
+            let quizes = riddler::Quizes::setup_single_examination();
+            println!("Quizes available for testing:");
+            quizes.display_quiz_names();
+            let selected_quiz: riddler::Quiz;
+
+            loop {
+                let quizes = riddler::Quizes::setup_single_examination();
+                println!("Please enter one of the above displayed quizes to start, or return by entering 'start up screen'");
+                let user_input = tools::read_input();
+
+                if user_input == "start up screen" {
+                    return GameState::StartUpScreen;
+                }
+
+                let user_selected_quiz = quizes.ready_quiz(user_input);
+                if user_selected_quiz.is_none() {
+                    println!("Quiz not available, confirm spelling.");
+                    continue;
+                }
+                selected_quiz = user_selected_quiz.unwrap();
+                break;
+            }
+            selected_quiz
+        }
+        Some(quiz) => quiz,
+    };
+
+    let total_quiz_question = quiz.get_quiz_length();
+
+    if let Some(score) = riddler::Quiz::take_quiz(quiz, answered_questions_record) {
+        riddler::Quiz::show_result(score, total_quiz_question);
+    } else {
+        return GameState::QuitGame;
+    }
 
     return handle_user_action();
 }
 
 fn game_show() -> GameState {
-    println!("Appologies, this game mode has not been implemented yet.");
-    return handle_user_action();
-}
-
-fn save_and_quit() -> GameState {
-    println!("Appologies, this game mode has not been implemented yet.");
+    println!("Apologies, this game mode has not been implemented yet.");
     return handle_user_action();
 }
