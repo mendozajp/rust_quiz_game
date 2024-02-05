@@ -8,34 +8,6 @@ use std::io::Write;
 use std::{fs, fs::File, path::Path};
 use toml;
 
-/// Load a toml quiz file into memory
-pub fn load_single_exam_save_file(path: &Path) -> SavedQuiz {
-    let toml_str = fs::read_to_string(path).expect("Failed to read toml file");
-    let saved_quiz: SavedQuiz = toml::from_str(&toml_str).expect("Failed to deserialize toml file");
-
-    return saved_quiz;
-}
-
-/// Creates and saves a saved file from the single examination game mode to project dir
-pub fn create_and_save_single_exam_save_file(
-    quiz_to_save: Quiz,
-    answered_questions: Vec<(String, bool)>,
-) -> std::io::Result<String> {
-    let saved_quiz = SavedQuiz {
-        ordered_quiz: quiz_to_save,
-        answered_questions: answered_questions,
-    };
-    let saved_file: String = toml::to_string(&saved_quiz).expect("Failed to serialize toml file");
-    let file_name = format!(
-        "{}_single_exam_save_file.toml",
-        Local::now().format("%d-%m-%Y_%H:%M")
-    );
-
-    let mut file = File::create(file_name.clone())?;
-    file.write(saved_file.as_bytes())?;
-    Ok(file_name)
-}
-
 /// Struct mainly for saving and loading files for single examination.
 #[derive(Serialize, Deserialize, Clone)]
 pub struct SavedQuiz {
@@ -67,6 +39,9 @@ pub struct Quizes {
 impl Quizes {
     /// Load all quiz toml files in quizes folder
     fn load_stored_quizes() -> Vec<Quiz> {
+        // *********************** SKIPPING UNIT TESTS ***********************
+        // *********************** REQUIRES CHANGE TO TEST CORRECTLY ***********************
+
         let mut cached_quizes: Vec<Quiz> = Vec::new();
         let paths = fs::read_dir("src/quizes/").unwrap();
 
@@ -78,6 +53,7 @@ impl Quizes {
 
     /// Creates quizes structure populated with all available quizes for user.
     pub fn setup_single_examination() -> Quizes {
+        // *********************** SKIPPING UNIT TESTS ***********************
         Quizes {
             available_quizes: Quizes::load_stored_quizes(),
         }
@@ -85,6 +61,9 @@ impl Quizes {
 
     /// Display all quizes within quizes structure to user.
     pub fn display_quiz_names(&self) {
+        // *********************** SKIPPING UNIT TESTS ***********************
+        // *********************** REQUIRES CHANGE TO TEST CORRECTLY ***********************
+
         for quiz in &self.available_quizes {
             println!("{}", quiz.quiz_name);
         }
@@ -92,6 +71,7 @@ impl Quizes {
 
     /// Return a single quiz structure to begin game or none on invaild input.
     pub fn ready_quiz(self, input_quiz_name: String) -> Option<Quiz> {
+        // *********************** UNIT TEST NEEDS REVIEW ***********************
         let mut quiz: Option<Quiz> = None;
 
         for single_quiz in self.available_quizes {
@@ -163,7 +143,7 @@ impl Quiz {
             }
         }
         if save_and_quit_prompt {
-            match create_and_save_single_exam_save_file(quiz, answered_questions_record) {
+            match create_and_save_single_exam_save_file(quiz, answered_questions_record, None) {
                 Ok(file_name) => {
                     println!("Progess saved at {file_name}.");
                     return None;
@@ -186,132 +166,123 @@ impl Quiz {
     pub fn show_result(score: i32, total_questions: i32) {
         tools::clear_terminal();
         let grade_number = score * 100 / total_questions;
-        fn _print_random_grade_message(grade: char) {
-            let a = vec![
-                "Fantastic work!",
-                "Oh shit!",
-                "Jesus!",
-                "Fucking Hell!",
-                "I'm not worthy of your presence!",
-            ];
-            let b = vec![
-                "Nice.",
-                "Could've been better.",
-                "Alright, good job!",
-                "Close enough I suppose.",
-                "Nice work keeping above C level.",
-            ];
-            let c = vec![
-                "Acceptable.",
-                "Ok. Sure.",
-                "Nothing special.",
-                "Cs get degrees.",
-            ];
-            let d = vec![
-                "Cutting it close eh?",
-                "Bah, you'll get em next time.",
-                "Hey, that's passing right?",
-                "Do better.",
-                "You got this. Never surrender. Give it another try.",
-            ];
-            let f = vec![
-                "Damn, you fucking suck.",
-                "Jesus man. Really?",
-                "Were you even trying?",
-                "Looks like all those brain cells really are gone.",
-                "Sheeesh, nice work bro.",
-                "Fucking dumb ass.",
-                "Bruh",
-            ];
-            let mut rng = thread_rng();
-
-            match grade {
-                'A' => println!("{}", a[rng.gen_range(0..a.len() - 1)]),
-                'B' => println!("{}", b[rng.gen_range(0..b.len() - 1)]),
-                'C' => println!("{}", c[rng.gen_range(0..c.len() - 1)]),
-                'D' => println!("{}", d[rng.gen_range(0..d.len() - 1)]),
-                'F' => println!("{}", f[rng.gen_range(0..f.len() - 1)]),
-                _ => {}
-            }
-        }
 
         println!(
             "You scored {score} out of {} -- {grade_number}%",
             total_questions
         );
+        //TODO: PLS get rid of this
         let grade: char;
         match grade_number {
             97..=100 => {
                 grade = 'A';
                 println!("Grade: {grade}+");
-                _print_random_grade_message(grade);
             }
             94..=96 => {
                 grade = 'A';
                 println!("Grade: {grade}");
-                _print_random_grade_message(grade);
             }
             90..=93 => {
                 grade = 'A';
                 println!("Grade: {grade}-");
-                _print_random_grade_message(grade);
             }
             87..=89 => {
                 grade = 'B';
                 println!("Grade: {grade}+");
-                _print_random_grade_message(grade);
             }
             84..=86 => {
                 grade = 'B';
                 println!("Grade: {grade}");
-                _print_random_grade_message(grade);
             }
             80..=83 => {
                 grade = 'B';
                 println!("Grade: {grade}-");
-                _print_random_grade_message(grade);
             }
             77..=79 => {
                 grade = 'C';
                 println!("Grade: {grade}+");
-                _print_random_grade_message(grade);
             }
             74..=76 => {
                 grade = 'C';
                 println!("Grade: {grade}");
-                _print_random_grade_message(grade);
             }
             70..=73 => {
                 grade = 'C';
                 println!("Grade: {grade}-");
-                _print_random_grade_message(grade);
             }
             67..=69 => {
                 grade = 'D';
                 println!("Grade: {grade}+");
-                _print_random_grade_message(grade);
             }
             64..=66 => {
                 grade = 'D';
                 println!("Grade: {grade}");
-                _print_random_grade_message(grade);
             }
             60..=63 => {
                 grade = 'D';
                 println!("Grade: {grade}-");
-                _print_random_grade_message(grade);
             }
             50..=59 => {
                 grade = 'F';
                 println!("Grade: {grade}");
-                _print_random_grade_message(grade);
             }
             0..=49 => {
                 grade = 'F';
                 println!("Grade: {grade}-");
-                _print_random_grade_message(grade);
             }
             _ => unreachable!(),
+        }
+        Quiz::_print_random_grade_message(grade);
+    }
+
+    fn _print_random_grade_message(grade: char) {
+        let a = vec![
+            "Fantastic work!",
+            "Oh shit!",
+            "Jesus!",
+            "Fucking Hell!",
+            "I'm not worthy of your presence!",
+        ];
+        let b = vec![
+            "Nice.",
+            "Could've been better.",
+            "Alright, good job!",
+            "Close enough I suppose.",
+            "Nice work keeping above C level.",
+        ];
+        let c = vec![
+            "Acceptable.",
+            "Ok. Sure.",
+            "Nothing special.",
+            "Cs get degrees.",
+        ];
+        let d = vec![
+            "Cutting it close eh?",
+            "Bah, you'll get em next time.",
+            "Hey, that's passing right?",
+            "Do better.",
+            "You got this. Never surrender. Give it another try.",
+        ];
+        let f = vec![
+            "Damn, you fucking suck.",
+            "Jesus man. Really?",
+            "Were you even trying?",
+            "Looks like all those brain cells really are gone.",
+            "Sheeesh, nice work bro.",
+            "Fucking dumb ass.",
+            "Bruh",
+        ];
+        let mut rng = thread_rng();
+
+        match grade {
+            'A' => println!("{}", a[rng.gen_range(0..a.len() - 1)]),
+            'B' => println!("{}", b[rng.gen_range(0..b.len() - 1)]),
+            'C' => println!("{}", c[rng.gen_range(0..c.len() - 1)]),
+            'D' => println!("{}", d[rng.gen_range(0..d.len() - 1)]),
+            'F' => println!("{}", f[rng.gen_range(0..f.len() - 1)]),
+            _ => {
+                panic!("INVAILD GRADE")
+            }
         }
     }
 }
@@ -391,4 +362,79 @@ pub fn load_quiz_from_toml(path: &Path) -> Quiz {
     let quiz: Quiz = toml::from_str(&toml_str).expect("Failed to deserialize toml file");
 
     return quiz;
+}
+
+/// Load a toml quiz file into memory
+pub fn load_single_exam_save_file(path: &Path) -> SavedQuiz {
+    let toml_str = fs::read_to_string(path).expect("Failed to read toml file");
+    let saved_quiz: SavedQuiz = toml::from_str(&toml_str).expect("Failed to deserialize toml file");
+
+    return saved_quiz;
+}
+
+/// Creates and saves a saved file from the single examination game mode to project dir
+pub fn create_and_save_single_exam_save_file(
+    quiz_to_save: Quiz,
+    answered_questions: Vec<(String, bool)>,
+    name_of_save_file: Option<String>, // TODO: Currently only for unit tests
+) -> std::io::Result<String> {
+    let saved_quiz = SavedQuiz {
+        ordered_quiz: quiz_to_save,
+        answered_questions: answered_questions,
+    };
+    let saved_file: String = toml::to_string(&saved_quiz).expect("Failed to serialize toml file");
+    let file_name = match name_of_save_file {
+        None => {
+            format!(
+                "{}_single_exam_save_file.toml",
+                Local::now().format("%d-%m-%Y_%H:%M")
+            )
+        }
+        Some(file_name) => file_name,
+    };
+
+    let mut file = File::create(file_name.clone())?;
+    file.write(saved_file.as_bytes())?;
+    Ok(file_name)
+}
+
+/// testing private functions
+#[cfg(test)]
+mod tests {
+    use crate::riddler;
+    #[test]
+    fn test_check_answered_questions() {
+        let question_number = "question1".to_string();
+        let arr_of_answered_questions1 = vec![("question1".to_string(), false)];
+        let arr_of_answered_questions2 = vec![("question2".to_string(), false)];
+
+        assert_eq!(
+            Some(false),
+            riddler::SavedQuiz::check_answered_question(
+                &question_number,
+                &arr_of_answered_questions1
+            )
+        );
+        assert_eq!(
+            None,
+            riddler::SavedQuiz::check_answered_question(
+                &question_number,
+                &arr_of_answered_questions2
+            )
+        );
+    }
+    #[test]
+    fn test_print_random_grade_message() {
+        riddler::Quiz::_print_random_grade_message('A');
+        riddler::Quiz::_print_random_grade_message('B');
+        riddler::Quiz::_print_random_grade_message('C');
+        riddler::Quiz::_print_random_grade_message('D');
+        riddler::Quiz::_print_random_grade_message('F');
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_print_random_grade_message_1() {
+        riddler::Quiz::_print_random_grade_message('S');
+    }
 }

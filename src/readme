@@ -1,3 +1,15 @@
+1/5/24
+Save and quit functionality was bumpy, but we got it. Unit tests is all thats left. I say you read the whole chapter before you start.
+Make sure those tests look good. We havnt been reading much at all, at some point these gaps in knowledge will solidify. We should keep reading
+what we skipped once we finish. We agreed to jump into the project cause we need this done but dont forget we skipped a lot we should know. 
+
+After this is done, we should B-line for chapter 12. Once that chapter is done I think we can jump around to what we think is interesting and continue. 
+You should at the very least be very close with Chapters 1-12. 
+
+
+
+
+
 1/29/24
 Took a bit longer then expected, but it looks good. A lot cleaner and just kinda makes more sense. Didnt meet 2 of the objectives. We have to do those now. 
 2 things left for the rust cert. We can think about game show if this is not enough AFTER the initial submission.
@@ -5,7 +17,6 @@ Took a bit longer then expected, but it looks good. A lot cleaner and just kinda
  - unit tests for everything you have so far. refer to the rust cert for more details but you need at least 80% coverage. 
 
 Once this is done, put up a pr, and find a way to take some notes and refer them to here. Addresing their notes is the next step after this one, given no problems with this step. 
-
 
 
 
