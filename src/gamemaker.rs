@@ -123,6 +123,6 @@ fn single_examination(saved_quiz: Option<SavedQuiz>) -> GameState {
 }
 
 fn game_show() -> GameState {
-    println!("Appologies, this game mode has not been implemented yet.");
+    println!("Apologies, this game mode has not been implemented yet.");
     return handle_user_action();
 }

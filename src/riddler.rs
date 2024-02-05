@@ -1,3 +1,4 @@
+use crate::tools;
 use chrono::Local;
 use rand::prelude::SliceRandom;
 use rand::{thread_rng, Rng};
@@ -6,9 +7,6 @@ use std::collections::HashMap;
 use std::io::Write;
 use std::{fs, fs::File, path::Path};
 use toml;
-
-#[path = "tools.rs"]
-mod tools;
 
 /// Load a toml quiz file into memory
 pub fn load_single_exam_save_file(path: &Path) -> SavedQuiz {
