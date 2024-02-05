@@ -24,6 +24,7 @@ fn handle_user_action() -> GameState {
 
         let user_action = tools::read_input();
 
+        println!();
         match user_action.as_str() {
             "exit" => return GameState::QuitGame,
             "start up screen" => return GameState::StartUpScreen,
