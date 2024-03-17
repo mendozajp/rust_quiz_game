@@ -1,225 +1,280 @@
 quiz_name = "How well do you know Jordy?"
-[questions]
-    [questions.question1]
+[[questions]]
     question = "What is Jordy's Favorite book?" 
-    answer1 = "The Alchemist"
-    answer2 = "The Odyssey"
-    answer3 = "The Divine Comedy: Inferno"
-    answer4 = "The Hitchhikers Guide to the Galaxy"
+    answers = [
+    "The Alchemist",
+    "The Odyssey",
+    "The Divine Comedy: Inferno",
+    "The Hitchhikers Guide to the Galaxy",
+    ]
     correct_answer = 1
 
-    [questions.question2]
+[[questions]]
     question = "Jordy gets stabbed, what happens?" 
-    answer1 = "Nothing."
-    answer2 = "He dies."
-    answer3 = "He fights back."
-    answer4 = "He stabs them back."
+    answers = [
+    "Nothing.",
+    "He dies.",
+    "He fights back.",
+    "He stabs them back.",
+    ]
     correct_answer = 2
     
-    [questions.question3]
+[[questions]]
     question = "Which of the following would Jordy prefer to be locked in deadly combat with?" 
-    answer1 = "7 Ducks"
-    answer2 = "4 Raccoons"
-    answer3 = "3 Capybara"
-    answer4 = "2 Flamingos"
+    answers = [
+    "7 Ducks",
+    "4 Raccoons",
+    "3 Capybara",
+    "2 Flamingos",
+    ]
     correct_answer = 1
 
-    [questions.question4]
+[[questions]]
     question = "What is Jordy's Favorite anime?" 
-    answer1 = "School Rumble"
-    answer2 = "Cowbow Bebop"
-    answer3 = "Full Metal Alchemist"
-    answer4 = "Overlord"
+    answers = [
+    "School Rumble",
+    "Cowbow Bebop",
+    "Full Metal Alchemist",
+    "Overlord",
+    ]
     correct_answer = 1
 
-    [questions.question5]
+[[questions]]
     question = "In the thought experiment named The Ship of Theseus, at what point would Jordy consider the ship a new ship?" 
-    answer1 = "Anything > 0%"
-    answer2 = "50%"
-    answer3 = "100%"
-    answer4 = "Never"
+    answers = [
+    "Anything > 0%",
+    "50%",
+    "100%",
+    "Never",
+    ]
     correct_answer = 4 
 
-    [questions.question6]
+[[questions]]
     question = "What is Jordy's Favorite audible?" 
-    answer1 = "Project Hail Mary"
-    answer2 = "Ready Player One"
-    answer3 = "The Name of the Wind"
-    answer4 = "The Way of Kings"
+    answers = [
+    "Project Hail Mary",
+    "Ready Player One",
+    "The Name of the Wind",
+    "The Way of Kings",
+    ]
     correct_answer = 1
 
-    [questions.question7]
+[[questions]]
     question = "In what situation would Jordy rather find himself in?" 
-    answer1 = "Alien Invasion"
-    answer2 = "Zombie Virus Outbreak"
-    answer3 = "The Purge"
-    answer4 = "Nuclear Winter"
+    answers = [
+    "Alien Invasion",
+    "Zombie Virus Outbreak",
+    "The Purge",
+    "Nuclear Winter",
+    ]
     correct_answer = 4
 
-    [questions.question8]
+[[questions]]
     question = "According to speculations formed by Julius, EE Teams first co-op, what criminal organization is Jordy a part of?" 
-    answer1 = "Solomon Organization"
-    answer2 = "Crips"
-    answer3 = "MS-13"
-    answer4 = "ISIS"
+    answers = [
+    "Solomon Organization",
+    "Crips",
+    "MS-13",
+    "ISIS",
+    ]
     correct_answer = 4
 
-    [questions.question9]
+[[questions]]
     question = "You ask Jordy how hes doing, what does he say?" 
-    answer1 = "Good How are you?"
-    answer2 = "eh, you know how it is."
-    answer3 = "Pretty Alright."
-    answer4 = "Same old, you know."
+    answers = [
+    "Good How are you?",
+    "eh, you know how it is.",
+    "Pretty Alright.",
+    "Same old, you know.",
+    ]
     correct_answer = 3
 
-    [questions.question10]
+[[questions]]
     question = "As a surprise, you hand Jordy a beer, what does he say?" 
-    answer1 = "Sheeeeesh! Thank you!"
-    answer2 = "Oho, thank you sir!"
-    answer3 = "Oh shit, Thanks!!"
-    answer4 = "Oh, no thank you."
+    answers = [
+    "Sheeeeesh! Thank you!",
+    "Oho, thank you sir!",
+    "Oh shit, Thanks!!",
+    "Oh, no thank you.",
+    ]
     correct_answer = 2
 
-    [questions.question11]
+[[questions]]
     question = "Who is Jordy's favorite Greek God?" 
-    answer1 = "Dionysus"
-    answer2 = "Hephaestus"
-    answer3 = "Hermes"
-    answer4 = "Hades"
+    answers = [
+    "Dionysus",
+    "Hephaestus",
+    "Hermes",
+    "Hades",
+    ]
     correct_answer = 4
 
-    [questions.question12]
+[[questions]]
     question = "What are Jordy's thoughts on Aliens?"
-    answer1 = "No aliens, no way."
-    answer2 = "We have to be the first. I think we would have heard or seen something by now if theres others, or they would have seen us."
-    answer3 = "Maybe at some point, maybe not. I really don't know if they are out there, but I certainly hope not."
-    answer4 = "They are out there, theres gotta be something. The universe is far to vast to have nothing."
+    answers = [
+    "No aliens, no way.",
+    "We have to be the first. I think we would have heard or seen something by now if theres others, or they would have seen us.",
+    "Maybe at some point, maybe not. I really don't know if they are out there, but I certainly hope not.",
+    "They are out there, theres gotta be something. The universe is far to vast to have nothing.",
+    ]
     correct_answer = 4
 
-    [questions.question13]
+[[questions]]
     question = "What is a movie that Jordy would be down to watch at any time?" 
-    answer1 = "Forrest Gump"
-    answer2 = "Pirates of the Caribbean"
-    answer3 = "Dances with Wolves"
-    answer4 = "The Lord of the Rings: The Return of the King"
+    answers = [
+    "Forrest Gump",
+    "Pirates of the Caribbean",
+    "Dances with Wolves",
+    "The Lord of the Rings: The Return of the King",
+    ]
     correct_answer = 2
 
-    [questions.question14]
+[[questions]]
     question = "What type of Music does Jordy like the least?" 
-    answer1 = "Country"
-    answer2 = "Lo-fi"
-    answer3 = "Trap"
-    answer4 = "Dubstep"
+    answers = [
+    "Country",
+    "Lo-fi",
+    "Trap",
+    "Dubstep",
+    ]
     correct_answer = 3
 
-    [questions.question15]
+[[questions]]
     question = "What was Jordy known for when he was an infant?" 
-    answer1 = "Wanting Solitute"
-    answer2 = "Crying all the time"
-    answer3 = "Being aggressive"
-    answer4 = "Nothing, he was an infant."
+    answers = [
+    "Wanting Solitute",
+    "Crying all the time",
+    "Being aggressive",
+    "Nothing, he was an infant.",
+    ]
     correct_answer = 1
 
-    [questions.question16]
+[[questions]]
     question = "What was Jordy most likley doing on January 1st, 2024 at 12:03 am?" 
-    answer1 = "Sleeping"
-    answer2 = "Eating Grapes"
-    answer3 = "Partying"
-    answer4 = "Drinking"
+    answers = [
+    "Sleeping",
+    "Eating Grapes",
+    "Partying",
+    "Drinking",
+    ]
     correct_answer = 2
 
-    [questions.question17]
+[[questions]]
     question = "What type of phobia does Jordy have? "
-    answer1 = "Acrophobia"
-    answer2 = "Samhainophobia"
-    answer3 = "Agoraphobia"
-    answer4 = "Melissophobia"
+    answers = [
+    "Acrophobia",
+    "Samhainophobia",
+    "Agoraphobia",
+    "Melissophobia",
+    ]
     correct_answer = 4
 
-    [questions.question18]
+[[questions]]
     question = "Best Pizza place in existance in Jordy's opinion?" 
-    answer1 = "Santarpio's"
-    answer2 = "Hotbox"
-    answer3 = "Prince Palace"
-    answer4 = "Otto"
+    answers = [
+    "Santarpio's",
+    "Hotbox",
+    "Prince Palace",
+    "Otto",
+    ]
     correct_answer = 3
 
-    [questions.question19]
+[[questions]]
     question = "You and Jordy sit in a time machine and you tell him to set a time period to go visit. What does he pick?" 
-    answer1 = "Mesozoic"
-    answer2 = "Classical Antiquity"
-    answer3 = "Early Modern Period"
-    answer4 = "High Middle Ages"
+    answers = [
+    "Mesozoic",
+    "Classical Antiquity",
+    "Early Modern Period",
+    "High Middle Ages",
+    ]
     correct_answer = 2
 
-    [questions.question20]
+[[questions]]
     question = "What is Jordy's Smash Bros main?" 
-    answer1 = "Robin"
-    answer2 = "Ganondorf"
-    answer3 = "Ike"
-    answer4 = "Joker"
+    answers = [
+    "Robin",
+    "Ganondorf",
+    "Ike",
+    "Joker",
+    ]
     correct_answer = 2
 
-    [questions.question21]
+[[questions]]
     question = "What is Jordy's Favorite Legend of Zelda Game?" 
-    answer1 = "Ocarina of Time"
-    answer2 = "Twilight Princess"
-    answer3 = "Majoras Mask"
-    answer4 = "Breath of the Wild"
+    answers = [
+    "Ocarina of Time",
+    "Twilight Princess",
+    "Majoras Mask",
+    "Breath of the Wild",
+    ]
     correct_answer = 3
 
-    [questions.question22]
+[[questions]]
     question = "What was Jordy doing on September 8th, 2022?" 
-    answer1 = "Working."
-    answer2 = "👀"
-    answer3 = "Drinking Tea."
-    answer4 = "Playing video games."
+    answers = [
+    "Working.",
+    "👀",
+    "Drinking Tea.",
+    "Playing video games.",
+    ]
     correct_answer = 1
 
-    [questions.question23]
+[[questions]]
     question = "What was Jordy's Favorite board game?" 
-    answer1 = "Wingspan"
-    answer2 = "Dominion"
-    answer3 = "Disney Villanous"
-    answer4 = "Dominos"
+    answers = [
+    "Wingspan",
+    "Dominion",
+    "Disney Villanous",
+    "Dominos",
+    ]
     correct_answer = 2
 
-    [questions.question24]
-    question = "Jordy throws a snowball with an initail velocity of 15 m/s at angle 10 degrees to the horizonal. How long will the stone stay in the air, assuming it strikes the ground at the same height it was launched?" 
-    answer1 = "2.15 seconds"
-    answer2 = "0.53 seconds"
-    answer3 = "1.43 seconds"
-    answer4 = "0.23 seconds"
+[[questions]]
+    question = "Jordy throws a snowball with an initail velocity of 15 m/s at angle 10 degrees to the horizonal. How long will the snowball stay in the air, assuming it hits the ground at the same height it was launched?" 
+    answers = [
+    "2.15 seconds",
+    "0.53 seconds",
+    "1.43 seconds",
+    "0.23 seconds",
+    ]
     correct_answer = 2
 
-    [questions.question25]
+[[questions]]
     question = "What was Jordy's prefered meal in elemetry school?" 
-    answer1 = "Peanut butter and Jelly"
-    answer2 = "Chicken Nuggets"
-    answer3 = "Hot Pocket"
-    answer4 = "Peanut butter and Fluff"
+    answers = [
+    "Peanut butter and Jelly",
+    "Chicken Nuggets",
+    "Hot Pocket",
+    "Peanut butter and Fluff",
+    ]
     correct_answer = 4
 
-    [questions.question26]
+[[questions]]
     question = "You have a dream of being drafted in the army in the middle ages. You and Jordy are in the barracks readying for battle. What weapon does Jordy hold?" 
-    answer1 = "Morning Star"
-    answer2 = "Halberd"
-    answer3 = "Long Sword"
-    answer4 = "Katana"
+    answers = [
+    "Morning Star",
+    "Halberd",
+    "Long Sword",
+    "Katana",
+    ]
     correct_answer = 4
 
-    [questions.question27]
+[[questions]]
     question = "You and Jordy appear in a fantasy world, what 'class' is Jordy most likly to be/seek out?" 
-    answer1 = "Wizard"
-    answer2 = "Barbarian"
-    answer3 = "Rogue"
-    answer4 = "Bard"
+    answers = [
+    "Wizard",
+    "Barbarian",
+    "Rogue",
+    "Bard",
+    ]
     correct_answer = 1
 
-    [questions.question28]
+[[questions]]
     question = "What is Jordy's Preferred method for Human Extinction?" 
-    answer1 = "Nuclear War"
-    answer2 = "Extraterrestrial Invasion"
-    answer3 = "Cosmic Catastrophe"
-    answer4 = "Climate Change"
+    answers = [
+    "Nuclear War",
+    "Extraterrestrial Invasion",
+    "Cosmic Catastrophe",
+    "Climate Change",
+    ]
     correct_answer = 3

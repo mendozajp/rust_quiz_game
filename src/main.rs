@@ -1,4 +1,6 @@
 mod gamemaker;
+mod riddler;
+mod tools;
 
 use std::env;
 fn main() {

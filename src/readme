@@ -1,96 +1,25 @@
+quiz template is as follows:
 
-2/12/24
-Submitted the game to the round table and got back a lot of comments. Next devilverable is to address most if not all of them. H.'s comments are intense
-and he doesn't expect me to address everything but hopes I can do a couple of the major critisms. The small ones are all required. 
-Planning to knock out all the smaller comments right away and then address the major ones which would basically require a rewrite of riddler. 
+quiz_name = "test quiz"
+[[questions]]
+    question = "test question 1"
+    answers = [
+        "answer1",
+        "answer2",
+        "answer3",
+        "answer4",
+    ]
+    correct_answer = 1
 
-Once thats done, then we should be good and we can continue at our oun pace. 
-
-
-
-1/5/24
-Save and quit functionality was bumpy, but we got it. Unit tests is all thats left. I say you read the whole chapter before you start.
-Make sure those tests look good. We havnt been reading much at all, at some point these gaps in knowledge will solidify. We should keep reading
-what we skipped once we finish. We agreed to jump into the project cause we need this done but dont forget we skipped a lot we should know. 
-
-After this is done, we should B-line for chapter 12. Once that chapter is done I think we can jump around to what we think is interesting and continue. 
-You should at the very least be very close with Chapters 1-12. 
-
-
-
-
-
-1/29/24
-Took a bit longer then expected, but it looks good. A lot cleaner and just kinda makes more sense. Didnt meet 2 of the objectives. We have to do those now. 
-2 things left for the rust cert. We can think about game show if this is not enough AFTER the initial submission.
- - Save and quit functionality and load save state functionality ( this is the biggest one )
- - unit tests for everything you have so far. refer to the rust cert for more details but you need at least 80% coverage. 
-
-Once this is done, put up a pr, and find a way to take some notes and refer them to here. Addresing their notes is the next step after this one, given no problems with this step. 
+[[questions]]
+    question = "test question 2"
+    answers = [
+        "answer1",
+        "answer2",
+        "answer3",
+        "answer4",
+    ]
+    correct_answer = 2
 
 
-
-
-
-1/15/24
-Been a while. First deliverable has been reached. Instead of going to phase 2, I wanna do some refactoring and clean up. And since we need to get the rust cert for work, we'll need to plan ahead based on time. 
-The following should be completed before moving on to phase 2:
-- Make an enum for game state. Something like a conduct quiz and main menu. Probably have story and save and quit there too. 
-- Make a save state for conduct quiz state.
-- Refactor current functions.
-- Make enum for result publisher. (make a big list of comments for fun)
-- Remake quiz structures. Look for examples online. 
-- Write unit tests when all above are completed. 
-
-* Note that I know we didnt get the final note on completion of quiz, but its really not that important. 
-
-
-
-12/4/23
-We started before this data but this is when I made the read me so whatever.
-
-First objective. Get the logic side workining. I think first iteration can look like the following workflow:
- - Start Quiz Show script
- - Immediate prompt to type name of quiz you would like to do. 
-    - Should be a list of all the known quizes in the proper folder
- - Upon typing the name, the quiz should immediatly restart, stdout will simply display the following:
-    - Name of Quiz
-    - Question
-    - 4 Possible answers labeled 1-4
-    - Prompt for user to enter a number from 1-4 for the desired answer. 
-
- - Upon completion of quiz, the results of the quiz should be displayed in said form:
-    - Name of Quiz
-    - Number of questions correct out of total number of questions incorrect
-    - Modivational blurb depending on how well you did.
-    - Prompt for user to end program or return to starting screen. 
-
-
-I think this working is somewhat exceptable as a flashcard game. But not as a quiz show. But getting this much done is huge. 
-After that, I think we go crazy on ui, keep all that functionality but get it working in like a window or something. make it look nice, make everything controllable with arrow keys, stuff like that. 
-We can go into more details for the requirements on that front later. 
-After this point it should look pretty nice, but it wont be anything more then a cool flashcard quiz setup until the last part is completed.
-*Note to self - flashcard option where either you make your own notes or can just study the contents of a quiz would actually be pretty cool. But thats  future post submition work. Plenty of work to be done before then. 
-
-Then the final objective, and what upon completion would constitue the game as being completed, would be the actual 
-quiz show format, were you get a collection of a couple of quizes, and play against some bots. 
-
-I think each task is pretty large but each are pretty similar is level of workload. 
-On workdays lets update our progress here and see how we do. 
-
-
-
-
-
-
-
-single examination template:
-quiz_name = ""
-[questions]
-    [questions.question1]
-    question = ""
-    answer1 = ""
-    answer2 = ""
-    answer3 = ""
-    answer4 = ""
-    correct_answer = 0
+only 4 answers for now. indexed 1-4

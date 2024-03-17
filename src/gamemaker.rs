@@ -1,9 +1,8 @@
+use std::collections::HashMap;
 use std::path::Path;
 
-use rust_quiz_game::riddler::{self, load_single_exam_save_file, SavedQuiz};
-
-#[path = "tools.rs"]
-mod tools;
+use crate::riddler;
+use crate::tools;
 
 /// framing enum for the whole game, at all times you will be in one of these states.
 enum GameState {
@@ -41,7 +40,18 @@ pub fn main_loop(arg_file: Option<String>) {
     let mut game_state: GameState = match arg_file {
         Some(arg_file) => {
             let file_path: &Path = Path::new(&arg_file);
-            let loaded_quiz: SavedQuiz = load_single_exam_save_file(file_path);
+
+            let loaded_quiz: riddler::SavedQuiz = match riddler::SavedQuiz::load(file_path) {
+                Ok(saved_quiz) => saved_quiz,
+                Err(e) => {
+                    println!("Encountered errors while loading saved file: \n{e}");
+                    println!(
+                        "Something may be wrong with the format of the file, rendering it useless."
+                    );
+                    println!("Please start the program again without the file as an arguement.");
+                    return;
+                }
+            };
             single_examination(Some(loaded_quiz))
         }
         None => start_up_screen(),
@@ -63,66 +73,83 @@ pub fn main_loop(arg_file: Option<String>) {
 /// Currently doesnt do anything but welcome user to game.
 fn start_up_screen() -> GameState {
     println!("Welcome To Quiz Show!\n");
-    return handle_user_action();
+    println!("To load a save file, please input the file name of a saved file as an arguement when starting the quiz game.");
+    handle_user_action()
 }
 
 /// Game state - Single Examination
 /// Guides user through quiz, prompts for every question and returns result upon completion.
-fn single_examination(saved_quiz: Option<SavedQuiz>) -> GameState {
-    let mut answered_questions_record: Option<Vec<(String, bool)>> = None;
+fn single_examination(saved_quiz: Option<riddler::SavedQuiz>) -> GameState {
+    let mut answered_questions_record: Option<HashMap<String, bool>> = None;
 
     let quiz: Option<riddler::Quiz> = match saved_quiz {
-        None => None,
-        Some(_) => {
-            println!("Loading saved quiz file, quiz will begin immeditaly.");
-            let loaded_quiz: SavedQuiz = saved_quiz.unwrap();
-
-            answered_questions_record = Some(loaded_quiz.answered_questions.clone());
-            Some(loaded_quiz.ordered_quiz)
+        None => {
+            let quizes = match riddler::QuizList::load_stored_quizes() {
+                Ok(quizes) => quizes,
+                Err(e) => {
+                    println!("Error on loading stored quizes: {e}");
+                    return GameState::StartUpScreen; // leads to a reset so you dont end up seeing that error
+                }
+            };
+            println!("Quizes available for testing:");
+            println!("{quizes}");
+            prompt_for_quiz() // can return none if user returns to start up screen or error on loading quizes
+        }
+        Some(saved_quiz) => {
+            answered_questions_record = Some(saved_quiz.answered_questions.clone());
+            Some(saved_quiz.quiz_in_progress)
         }
     };
 
-    let quiz: riddler::Quiz = match quiz {
-        None => {
-            let quizes = riddler::Quizes::setup_single_examination();
-            println!("Quizes available for testing:");
-            quizes.display_quiz_names();
-            let selected_quiz: riddler::Quiz;
-
-            loop {
-                let quizes = riddler::Quizes::setup_single_examination();
-                println!("Please enter one of the above displayed quizes to start, or return by entering 'start up screen'");
-                let user_input = tools::read_input();
-
-                if user_input == "start up screen" {
-                    return GameState::StartUpScreen;
-                }
-
-                let user_selected_quiz = quizes.ready_quiz(user_input);
-                if user_selected_quiz.is_none() {
-                    println!("Quiz not available, confirm spelling.");
-                    continue;
-                }
-                selected_quiz = user_selected_quiz.unwrap();
-                break;
-            }
-            selected_quiz
-        }
+    // catch user prompt to return to start up screen or unwrap
+    let quiz = match quiz {
+        None => return GameState::StartUpScreen,
         Some(quiz) => quiz,
     };
 
-    let total_quiz_question = quiz.get_quiz_length();
+    let total_quiz_question = &quiz.get_quiz_length();
 
-    if let Some(score) = riddler::Quiz::take_quiz(quiz, answered_questions_record) {
+    if let Some(score) = quiz.begin_quiz(answered_questions_record) {
         riddler::Quiz::show_result(score, total_quiz_question);
     } else {
+        // saving and quiting returns none, thus quiting the game after logic for saving state
         return GameState::QuitGame;
     }
 
-    return handle_user_action();
+    handle_user_action()
 }
 
 fn game_show() -> GameState {
     println!("Apologies, this game mode has not been implemented yet.");
-    return handle_user_action();
+    handle_user_action()
+}
+
+fn prompt_for_quiz() -> Option<riddler::Quiz> {
+    let selected_quiz: Option<riddler::Quiz>;
+
+    loop {
+        let quizes = match riddler::QuizList::load_stored_quizes() {
+            Ok(quizes) => quizes,
+            Err(e) => {
+                println!("Error on loading stored quizes: {e}");
+                println!("Returning to startup screen");
+                return None;
+            }
+        };
+        println!("Please enter one of the above displayed quizes to start, or return by entering 'start up screen'");
+        let user_input = tools::read_input();
+
+        if user_input == "start up screen" {
+            return None;
+        }
+
+        let user_selected_quiz = quizes.ready_quiz(user_input);
+        if user_selected_quiz.is_none() {
+            println!("Quiz not available, confirm spelling.");
+            continue;
+        }
+        selected_quiz = user_selected_quiz;
+        break;
+    }
+    selected_quiz
 }
