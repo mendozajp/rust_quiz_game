@@ -228,6 +228,7 @@ impl Quiz {
             println!();
         }
         let user_grade_percentage: u8 = (self.score * 100 / &self.get_quiz_length()) as u8;
+
         println!(
             "You got {} / {} correct. --- {}%",
             self.score, self.questions.len(), user_grade_percentage
@@ -515,28 +516,6 @@ mod tests {
         assert_eq!(1, test_quiz.get_quiz_length());
     }
 
-//     /// Testing not panicing for operable range
-//     #[test]
-//     fn test_show_result() {
-//         for score in 0..100 {
-//             Quiz::show_result(score, &100)
-//         }
-//         for total_questions in 1..100 {
-//             Quiz::show_result(1, &total_questions)
-//         }
-//     }
-
-//     /// Testing outside operable range
-//     #[test]
-//     fn test_show_result_1() {
-//         Quiz::show_result(11, &10)
-//     }
-//     #[test]
-//     #[should_panic]
-//     fn test_show_result_2() {
-//         Quiz::show_result(u32::MAX, &10)
-//     }
-
 //     #[test]
 //     fn serde_integreation_testing() {
 //         // feel like is a mess. for now know that the file path is "/tmp/.tmpqo6Lfk/Test_quiz.toml"
@@ -615,23 +594,6 @@ mod tests {
 //         assert_eq!("Test Quiz", quiz.quiz_name);
 //     }
 
-//     #[test]
-//     fn test_check_answered_questions() {
-//         let question_number = "question1".to_string();
-//         let mut arr_of_answered_questions1 = HashMap::new();
-//         let mut arr_of_answered_questions2 = HashMap::new();
-//         arr_of_answered_questions1.insert("question1".to_string(), false);
-//         arr_of_answered_questions2.insert("question2".to_string(), false);
-
-//         assert_eq!(
-//             Some(false),
-//             Quiz::check_answered_question(&question_number, &arr_of_answered_questions1)
-//         );
-//         assert_eq!(
-//             None,
-//             Quiz::check_answered_question(&question_number, &arr_of_answered_questions2)
-//         );
-//     }
     #[test]
     fn test_print_random_grade_message() {
         let a = Grade::from(100);
