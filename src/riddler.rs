@@ -196,12 +196,16 @@ impl Quiz {
 
         println!("type 'answers' if you would like to see what you got right and wrong. Otherwise just hit enter.");
         loop{
-            if tools::read_input() == "" {
+            let prompt = tools::read_input();
+            if prompt == "" {
                 break;
             }
-            else if tools::read_input() == "answers" {
+            else if prompt == "answers" {
                     self.display_user_answers();
                     break;
+            }
+            else {
+                println!("Either type 'answer' to view answers or just press enter to return to main menu...");
             }
         }
     }
