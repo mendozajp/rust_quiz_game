@@ -1,6 +1,4 @@
-use std::collections::HashMap;
 use std::path::Path;
-
 use crate::riddler;
 use crate::tools;
 
@@ -41,7 +39,7 @@ pub fn main_loop(arg_file: Option<String>) {
         Some(arg_file) => {
             let file_path: &Path = Path::new(&arg_file);
 
-            let loaded_quiz: riddler::SavedQuiz = match riddler::SavedQuiz::load(file_path) {
+            let loaded_quiz: riddler::Quiz = match riddler::Quiz::load(file_path) {
                 Ok(saved_quiz) => saved_quiz,
                 Err(e) => {
                     println!("Encountered errors while loading saved file: \n{e}");
@@ -79,8 +77,7 @@ fn start_up_screen() -> GameState {
 
 /// Game state - Single Examination
 /// Guides user through quiz, prompts for every question and returns result upon completion.
-fn single_examination(saved_quiz: Option<riddler::SavedQuiz>) -> GameState {
-    let mut answered_questions_record: Option<HashMap<String, bool>> = None;
+fn single_examination(saved_quiz: Option<riddler::Quiz>) -> GameState {
 
     let quiz: Option<riddler::Quiz> = match saved_quiz {
         None => {
@@ -96,8 +93,7 @@ fn single_examination(saved_quiz: Option<riddler::SavedQuiz>) -> GameState {
             prompt_for_quiz() // can return none if user returns to start up screen or error on loading quizes
         }
         Some(saved_quiz) => {
-            answered_questions_record = Some(saved_quiz.answered_questions.clone());
-            Some(saved_quiz.quiz_in_progress)
+            Some(saved_quiz)
         }
     };
 
@@ -107,10 +103,8 @@ fn single_examination(saved_quiz: Option<riddler::SavedQuiz>) -> GameState {
         Some(quiz) => quiz,
     };
 
-    let total_quiz_question = &quiz.get_quiz_length();
-
-    if let Some(score) = quiz.begin_quiz(answered_questions_record) {
-        riddler::Quiz::show_result(score, total_quiz_question);
+    if let Some(quiz) = quiz.begin_quiz() {
+        quiz.show_result();
     } else {
         // saving and quiting returns none, thus quiting the game after logic for saving state
         return GameState::QuitGame;
