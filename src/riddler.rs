@@ -227,6 +227,11 @@ impl Quiz {
             }
             println!();
         }
+        let user_grade_percentage: u8 = (self.score * 100 / &self.get_quiz_length()) as u8;
+        println!(
+            "You got {} / {} correct. --- {}%",
+            self.score, self.questions.len(), user_grade_percentage
+        );
         println!("Press enter to return to main menu.");
         tools::read_input();
     }
