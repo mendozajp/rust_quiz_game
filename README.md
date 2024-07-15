@@ -5,3 +5,5 @@ enter dir and do a
 cargo run --release
 
 should start the game right up.
+Thats for now, refer to this for progress on upcomming tasks:
+https://lovemuffin.atlassian.net/jira/software/projects/SCRUM/boards/1
