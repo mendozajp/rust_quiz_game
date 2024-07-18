@@ -6,6 +6,7 @@ use std::env;
 fn main() {
     let args: Vec<String> = env::args().collect();
 
+    // TODO: move main_loop to main.rs
     match read_args(&args) {
         Ok(None) => gamemaker::main_loop(None),
         Ok(any_string) => gamemaker::main_loop(any_string),

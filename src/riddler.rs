@@ -1,13 +1,16 @@
 use anyhow::Result;
 use chrono::Local;
+use colored::Colorize;
 use rand::seq::SliceRandom;
 use rand::thread_rng;
 use serde::{Deserialize, Serialize};
 use std::io::Write;
 use std::{fmt, path::Path};
 use std::{fs, fs::File};
-use colored::Colorize;
 
+use include_dir::{include_dir, Dir};
+
+static PROJECT_DIR: Dir = include_dir!("src/quizes/");
 
 use crate::tools;
 
@@ -18,6 +21,14 @@ pub struct ReadyQuiz {
 }
 
 impl ReadyQuiz {
+    fn ready_quiz_to_quiz(self) -> Quiz {
+        Quiz {
+            quiz_name: self.quiz_name,
+            questions: self.questions,
+            user_answers: Vec::<(Question, String)>::new(),
+            score: 0,
+        }
+    }
 
     /// load quiz into entry structure and transfer into more usable struct
     pub fn load_quiz_from_toml(path: &Path) -> Result<Quiz> {
@@ -27,17 +38,32 @@ impl ReadyQuiz {
         let mut rand = rand::thread_rng();
         loaded_quiz.questions.shuffle(&mut rand);
 
-        Ok(
-            Quiz{
-                quiz_name: loaded_quiz.quiz_name,
-                questions: loaded_quiz.questions,
-                user_answers: Vec::<(Question, String)>::new(),
-                score: 0,
-            }
-        )
+        Ok(Quiz {
+            quiz_name: loaded_quiz.quiz_name,
+            questions: loaded_quiz.questions,
+            user_answers: Vec::<(Question, String)>::new(),
+            score: 0,
+        })
     }
-}
 
+    /// it might be worth a shot using serde to see if you can parse it directly.
+    /// will only work if serde doesnt try to open files and only parses through strings.
+    pub fn load_included_quizes() -> Result<Vec<Quiz>> {
+        let mut cached_quizes: Vec<Quiz> = Vec::new();
+        for entry in PROJECT_DIR.find("*.toml")? {
+            let quiz_contents = PROJECT_DIR
+                .get_file(entry.path())
+                .expect("could not find file")
+                .contents_utf8()
+                .expect("could not retreive contents");
+            let deserial_attempt: ReadyQuiz = toml::from_str(&quiz_contents)?;
+            // dbg!(&deserial_attempt);
+            cached_quizes.push(deserial_attempt.ready_quiz_to_quiz());
+        }
+        return Ok(cached_quizes);
+    }
+    // get list of quizes
+}
 
 #[derive(Clone)]
 pub struct QuizList(Vec<Quiz>);
@@ -45,12 +71,7 @@ pub struct QuizList(Vec<Quiz>);
 impl QuizList {
     /// creates a quizes struct for loading all quizes to display to user
     pub fn load_stored_quizes() -> Result<QuizList> {
-        let mut cached_quizes: Vec<Quiz> = Vec::new();
-        let paths = fs::read_dir("src/quizes/").unwrap();
-
-        for path in paths {
-            cached_quizes.push(ReadyQuiz::load_quiz_from_toml(&path.unwrap().path())?);
-        }
+        let cached_quizes = ReadyQuiz::load_included_quizes()?;
         let quizes = QuizList(cached_quizes);
         Ok(quizes)
     }
@@ -90,13 +111,13 @@ impl Quiz {
     /// if question name in answered questions, the score should reflect it
     fn check_answered_question(&self, current_question: &Question) -> bool {
         for answered_question in &self.user_answers {
-            if &answered_question.0 == current_question{
+            if &answered_question.0 == current_question {
                 println!("this question has been answered - ignoring");
                 return true;
             } else {
-                continue
+                continue;
             }
-        };
+        }
         false
     }
 
@@ -144,7 +165,8 @@ impl Quiz {
                 }
             }
 
-            match question.ask() { // TODO: IM NOT SURE YOU CAN MATCH TUPLES LIKE THIS
+            match question.ask() {
+                // TODO: IM NOT SURE YOU CAN MATCH TUPLES LIKE THIS
                 Some((user_answer, true)) => {
                     self.score += 1;
                     new_user_answers.push((question.clone(), user_answer));
@@ -161,7 +183,7 @@ impl Quiz {
             }
         }
         // combine new user answers with user answers for reporting and saving
-        for answer in new_user_answers{
+        for answer in new_user_answers {
             self.user_answers.push(answer);
         }
 
@@ -189,22 +211,22 @@ impl Quiz {
         let user_grade = Grade::from(user_grade_percentage);
         println!(
             "You got {} / {} correct. --- {}%",
-            self.score, self.questions.len(), user_grade_percentage
+            self.score,
+            self.questions.len(),
+            user_grade_percentage
         );
         println!("{user_grade}");
         user_grade.print_random_grade_message();
 
         println!("type 'answers' if you would like to see what you got right and wrong. Otherwise just hit enter.");
-        loop{
+        loop {
             let prompt = tools::read_input();
             if prompt == "" {
                 break;
-            }
-            else if prompt == "answers" {
-                    self.display_user_answers();
-                    break;
-            }
-            else {
+            } else if prompt == "answers" {
+                self.display_user_answers();
+                break;
+            } else {
                 println!("Either type 'answer' to view answers or just press enter to return to main menu...");
             }
         }
@@ -219,11 +241,14 @@ impl Quiz {
         for report in &self.user_answers {
             println!("Question: {}", report.0.question);
             if report.0.answers[(report.0.correct_answer - 1) as usize] == report.1 {
-                println!("{} {}","Your answer:".green(), report.1.green());
-            }
-            else {
-                println!("{} {}","Your answer:".red(), report.1.red());
-                println!("{} {}","Correct Answer:".green(), report.0.answers[(report.0.correct_answer - 1) as usize].green());
+                println!("{} {}", "Your answer:".green(), report.1.green());
+            } else {
+                println!("{} {}", "Your answer:".red(), report.1.red());
+                println!(
+                    "{} {}",
+                    "Correct Answer:".green(),
+                    report.0.answers[(report.0.correct_answer - 1) as usize].green()
+                );
             }
             println!();
         }
@@ -231,7 +256,9 @@ impl Quiz {
 
         println!(
             "You got {} / {} correct. --- {}%",
-            self.score, self.questions.len(), user_grade_percentage
+            self.score,
+            self.questions.len(),
+            user_grade_percentage
         );
         println!("Press enter to return to main menu.");
         tools::read_input();
@@ -478,7 +505,7 @@ mod tests {
             quiz_name: "Test Quiz".to_string(),
             questions: vec![create_test_question()],
             user_answers: Vec::new(),
-            score: 0
+            score: 0,
         }
     }
     fn create_test_quizes() -> QuizList {
@@ -516,83 +543,83 @@ mod tests {
         assert_eq!(1, test_quiz.get_quiz_length());
     }
 
-//     #[test]
-//     fn serde_integreation_testing() {
-//         // feel like is a mess. for now know that the file path is "/tmp/.tmpqo6Lfk/Test_quiz.toml"
-//         let dir = tempdir().expect("Failed to create tmp dir");
-//         let file_path = dir
-//             .path()
-//             .join("Test_quiz.toml")
-//             .into_os_string()
-//             .into_string()
-//             .unwrap();
+    //     #[test]
+    //     fn serde_integreation_testing() {
+    //         // feel like is a mess. for now know that the file path is "/tmp/.tmpqo6Lfk/Test_quiz.toml"
+    //         let dir = tempdir().expect("Failed to create tmp dir");
+    //         let file_path = dir
+    //             .path()
+    //             .join("Test_quiz.toml")
+    //             .into_os_string()
+    //             .into_string()
+    //             .unwrap();
 
-//         // testing saving file
-//         let file_path_to_save = Path::new(&file_path);
+    //         // testing saving file
+    //         let file_path_to_save = Path::new(&file_path);
 
-//         let saved_quiz = create_test_saved_quiz();
-//         match saved_quiz.save_to_path(&file_path_to_save) {
-//             Ok(_) => (),
-//             Err(_) => panic!("Failed to save file"),
-//         }
+    //         let saved_quiz = create_test_saved_quiz();
+    //         match saved_quiz.save_to_path(&file_path_to_save) {
+    //             Ok(_) => (),
+    //             Err(_) => panic!("Failed to save file"),
+    //         }
 
-//         // testing load saved file
-//         let test_saved_quiz = create_test_saved_quiz();
-//         // let file_path: &Path = Path::new(&"Test_quiz.toml");
+    //         // testing load saved file
+    //         let test_saved_quiz = create_test_saved_quiz();
+    //         // let file_path: &Path = Path::new(&"Test_quiz.toml");
 
-//         assert_eq!(
-//             test_saved_quiz.quiz_in_progress.quiz_name,
-//             Quiz::load(Path::new(&file_path))
-//                 .unwrap()
-//                 .quiz_in_progress
-//                 .quiz_name,
-//             "Failed to load saved quiz state"
-//         );
-//     }
+    //         assert_eq!(
+    //             test_saved_quiz.quiz_in_progress.quiz_name,
+    //             Quiz::load(Path::new(&file_path))
+    //                 .unwrap()
+    //                 .quiz_in_progress
+    //                 .quiz_name,
+    //             "Failed to load saved quiz state"
+    //         );
+    //     }
 
-//     #[test]
-//     fn test_load_quiz_from_toml() {
-//         let dir = tempdir().expect("Failed to create tmp dir");
-//         let file_path = dir
-//             .path()
-//             .join("Test_quiz.toml")
-//             .into_os_string()
-//             .into_string()
-//             .unwrap();
+    //     #[test]
+    //     fn test_load_quiz_from_toml() {
+    //         let dir = tempdir().expect("Failed to create tmp dir");
+    //         let file_path = dir
+    //             .path()
+    //             .join("Test_quiz.toml")
+    //             .into_os_string()
+    //             .into_string()
+    //             .unwrap();
 
-//         let saved_quiz = format!(
-//             r#"
-// quiz_name = "Test Quiz"
-// [[questions]]
-// question = "Test Question"
-// answers = [
-//     "Test Answer1",
-//     "Test Answer2",
-//     "Test Answer3",
-//     "Test Answer4"
-//     ]
-// correct_answer = 1
-// "#
-//         );
-//         // let saved_file: String = toml::to_string(&saved_quiz).expect("Failed to serialize toml file");
-//         let mut file = File::create(file_path.clone()).unwrap();
-//         match file.write(saved_quiz.as_bytes()) {
-//             Ok(_) => println!("file writen successfully"),
-//             Err(_) => panic!(),
-//         }
+    //         let saved_quiz = format!(
+    //             r#"
+    // quiz_name = "Test Quiz"
+    // [[questions]]
+    // question = "Test Question"
+    // answers = [
+    //     "Test Answer1",
+    //     "Test Answer2",
+    //     "Test Answer3",
+    //     "Test Answer4"
+    //     ]
+    // correct_answer = 1
+    // "#
+    //         );
+    //         // let saved_file: String = toml::to_string(&saved_quiz).expect("Failed to serialize toml file");
+    //         let mut file = File::create(file_path.clone()).unwrap();
+    //         match file.write(saved_quiz.as_bytes()) {
+    //             Ok(_) => println!("file writen successfully"),
+    //             Err(_) => panic!(),
+    //         }
 
-//         // start of test
-//         let file_path: &Path = Path::new(&file_path);
-//         println!("{}", file_path.display());
-//         let quiz = match Quiz::load_quiz_from_toml(file_path) {
-//             Ok(quiz) => quiz,
-//             Err(e) => {
-//                 println!("Something went wrong!: {e}");
-//                 panic!()
-//             }
-//         };
-//         assert_eq!("Test Quiz", quiz.quiz_name);
-//     }
+    //         // start of test
+    //         let file_path: &Path = Path::new(&file_path);
+    //         println!("{}", file_path.display());
+    //         let quiz = match Quiz::load_quiz_from_toml(file_path) {
+    //             Ok(quiz) => quiz,
+    //             Err(e) => {
+    //                 println!("Something went wrong!: {e}");
+    //                 panic!()
+    //             }
+    //         };
+    //         assert_eq!("Test Quiz", quiz.quiz_name);
+    //     }
 
     #[test]
     fn test_print_random_grade_message() {
