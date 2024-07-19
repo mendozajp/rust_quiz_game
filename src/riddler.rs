@@ -30,24 +30,6 @@ impl ReadyQuiz {
         }
     }
 
-    /// load quiz into entry structure and transfer into more usable struct
-    pub fn load_quiz_from_toml(path: &Path) -> Result<Quiz> {
-        let toml_str = fs::read_to_string(path)?;
-        let mut loaded_quiz: ReadyQuiz = toml::from_str(&toml_str)?;
-
-        let mut rand = rand::thread_rng();
-        loaded_quiz.questions.shuffle(&mut rand);
-
-        Ok(Quiz {
-            quiz_name: loaded_quiz.quiz_name,
-            questions: loaded_quiz.questions,
-            user_answers: Vec::<(Question, String)>::new(),
-            score: 0,
-        })
-    }
-
-    /// it might be worth a shot using serde to see if you can parse it directly.
-    /// will only work if serde doesnt try to open files and only parses through strings.
     pub fn load_included_quizes() -> Result<Vec<Quiz>> {
         let mut cached_quizes: Vec<Quiz> = Vec::new();
         for entry in PROJECT_DIR.find("*.toml")? {
@@ -62,7 +44,6 @@ impl ReadyQuiz {
         }
         return Ok(cached_quizes);
     }
-    // get list of quizes
 }
 
 #[derive(Clone)]
