@@ -10,7 +10,8 @@ use std::{fs, fs::File};
 
 use include_dir::{include_dir, Dir};
 
-static PROJECT_DIR: Dir = include_dir!("src/quizes/");
+// rebuild if you add any new quizzes
+static PROJECT_DIR: Dir = include_dir!("src/quizzes/");
 
 use crate::tools;
 
@@ -47,7 +48,7 @@ impl ReadyQuiz {
 }
 
 #[derive(Clone)]
-pub struct QuizList(Vec<Quiz>);
+pub struct QuizList(pub Vec<Quiz>);
 
 impl QuizList {
     /// creates a quizes struct for loading all quizes to display to user

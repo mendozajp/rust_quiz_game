@@ -1,0 +1,20 @@
+quiz_name = "test quiz"
+[[questions]]
+    question = "What is Jordy's Favorite book?" 
+    answers = [
+    "The Alchemist",
+    "The Odyssey",
+    "The Divine Comedy: Inferno",
+    "The Hitchhikers Guide to the Galaxy",
+    ]
+    correct_answer = 1
+
+[[questions]]
+    question = "Jordy gets stabbed, what happens?" 
+    answers = [
+    "Nothing.",
+    "He dies.",
+    "He fights back.",
+    "He stabs them back.",
+    ]
+    correct_answer = 2

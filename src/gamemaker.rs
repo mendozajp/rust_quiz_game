@@ -1,6 +1,6 @@
-use std::path::Path;
 use crate::riddler;
 use crate::tools;
+use std::path::Path;
 
 /// framing enum for the whole game, at all times you will be in one of these states.
 enum GameState {
@@ -78,7 +78,6 @@ fn start_up_screen() -> GameState {
 /// Game state - Single Examination
 /// Guides user through quiz, prompts for every question and returns result upon completion.
 fn single_examination(saved_quiz: Option<riddler::Quiz>) -> GameState {
-
     let quiz: Option<riddler::Quiz> = match saved_quiz {
         None => {
             let quizes = match riddler::QuizList::load_stored_quizes() {
@@ -89,12 +88,12 @@ fn single_examination(saved_quiz: Option<riddler::Quiz>) -> GameState {
                 }
             };
             println!("Quizes available for testing:");
-            println!("{quizes}");
+            for quiz in quizes.0 {
+                println!("{}", quiz.quiz_name);
+            }
             prompt_for_quiz() // can return none if user returns to start up screen or error on loading quizes
         }
-        Some(saved_quiz) => {
-            Some(saved_quiz)
-        }
+        Some(saved_quiz) => Some(saved_quiz),
     };
 
     // catch user prompt to return to start up screen or unwrap
